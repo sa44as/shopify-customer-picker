@@ -17,23 +17,25 @@ const billingConfig = {
   },
 };
 
-const shopify = shopifyApp({
-  api: {
-    apiVersion: LATEST_API_VERSION,
-    restResources,
-    billing: undefined, // or replace with billingConfig above to enable example billing
-  },
-  auth: {
-    path: "/api/auth",
-    callbackPath: "/api/auth/callback",
-  },
-  webhooks: {
-    path: "/api/webhooks",
-  },
-  sessionStorage: new MongoDBSessionStorage(
-    DB_CONNECTION_STRING,
-    DB_NAME,
-  ),
-});
+const shopify = shopifyApp(
+  {
+    api: {
+      apiVersion: LATEST_API_VERSION,
+      restResources,
+      billing: undefined, // or replace with billingConfig above to enable example billing
+    },
+    auth: {
+      path: "/api/auth",
+      callbackPath: "/api/auth/callback",
+    },
+    webhooks: {
+      path: "/api/webhooks",
+    },
+    sessionStorage: new MongoDBSessionStorage(
+      new URL(DB_CONNECTION_STRING),
+      DB_NAME,
+    ),
+  }
+);
 
-export default shopify;
+export { shopify }

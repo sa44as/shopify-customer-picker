@@ -1,6 +1,6 @@
 import { DeliveryMethod } from "@shopify/shopify-api";
 
-export default {
+const GDPRWebhookHandlers = {
   /**
    * Customers can request their data from a store owner. When this happens,
    * Shopify invokes this webhook.
@@ -30,6 +30,8 @@ export default {
       //     "id": 9999
       //   }
       // }
+      // debugger
+      console.log('CUSTOMERS_DATA_REQUEST: payload:', payload);
     },
   },
 
@@ -59,6 +61,8 @@ export default {
       //     220458
       //   ]
       // }
+      // debugger
+      console.log('CUSTOMERS_REDACT: payload:', payload);
     },
   },
 
@@ -78,6 +82,10 @@ export default {
       //   "shop_id": 954889,
       //   "shop_domain": "{shop}.myshopify.com"
       // }
+      // debugger
+      console.log('SHOP_REDACT: payload:', payload);
     },
   },
-};
+}
+
+export { GDPRWebhookHandlers }
