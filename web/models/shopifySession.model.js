@@ -1,6 +1,6 @@
 import {Schema, model} from "mongoose";
 
-const shopifySesssionsSchema = new Schema(
+const shopifySesssionSchema = new Schema(
   {
     name: {
       type: String,
@@ -34,6 +34,6 @@ const shopifySesssionsSchema = new Schema(
   { timestamps: true }
 );
 
-const shopifySessionModel = model("shopify_session", shopifySesssionsSchema);
+const shopifySessionModel = model("shopify_session", shopifySesssionSchema);
 
 export { shopifySessionModel }

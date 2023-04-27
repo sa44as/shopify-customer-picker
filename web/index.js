@@ -2,9 +2,10 @@
 import { join } from "path";
 import { readFileSync } from "fs";
 import express from "express";
+import cors from "cors";
 import serveStatic from "serve-static";
 
-import { shopify, configurationService } from "./services/map.js";
+import { shopify, shopifySessionService, configurationService } from "./services/map.js";
 import productCreator from "./product-creator.js";
 import { GDPRWebhookHandlers, OrdersWebhookHandlers } from "./services/shopify.service/webhookHandlers/map.js";
 import { mongoConnect } from "./config/map.js";
@@ -43,8 +44,18 @@ app.post(
 
 app.use("/api/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
 
+const corsOptions = {
+  origin: async (origin, callback) => {
+    // db.loadOrigins is an example call to load
+    // a list of origins from a backing database
+    const shopifySessions = await shopifySessionService.find(null, 'shop');
+    console.log('shopifySessions: ', shopifySessions);
+    return callback(null, shopifySessions)
+  }
+}
+
 app.use(express.json());
-app.use('/api/v1/order', orderRoutes());
+app.use('/api/v1/order', cors(corsOptions), orderRoutes());
 
 app.get("/api/products/count", async (_req, res) => {
   const countData = await shopify.api.rest.Product.count({
