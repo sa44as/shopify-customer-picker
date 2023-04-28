@@ -31,6 +31,10 @@ const orderSchema = new Schema(
           type: String,
           required: true,
         },
+        shopify_quantity: {
+          type: String,
+          required: true,
+        },
         shopify_price: {
           type: String,
           required: true,

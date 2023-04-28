@@ -1,8 +1,8 @@
 import { orderModel, configurationModel } from "../models/map.js";
 import { shopifySessionService } from "./map.js";
 
-const getCalculatedPoints = (multiplier, shopifyPrice) => {
-  const calculatedPoints = multiplier * shopifyPrice;
+const getCalculatedPoints = (multiplier, shopifyQuantity, shopifyPrice) => {
+  const calculatedPoints = multiplier * shopifyQuantity * shopifyPrice;
   return calculatedPoints;
 }
 
@@ -14,7 +14,7 @@ const getCalculatedOrderPoints = async (transformedShopifyLineItemsData) => {
   return calculatedPoints;
 }
 
-const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, shopifyProductId, shopifyPrice) => {
+const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, shopifyProductId, shopifyQuantity, shopifyPrice) => {
   const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id == shopifyCustomerId);
   const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id == shopifyProductId);
 
@@ -25,7 +25,7 @@ const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, sho
   const allLevelsPoints = [defaultPoints, shopifyCustomerPoints, shopifyProductPoints];
   const multiplier = Math.max(...allLevelsPoints);
 
-  const calculatedPoints = getCalculatedPoints(multiplier, shopifyPrice);
+  const calculatedPoints = getCalculatedPoints(multiplier, shopifyQuantity, shopifyPrice);
   return calculatedPoints;
 }
 
@@ -39,6 +39,7 @@ const getTransformedShopifyLineItemsData = async (configuration, shopifyCustomer
   for (const shopifyLineItem of shopifyLineItems) {
     isShopifyLineItemDataValid = shopifyLineItem.shopify_product_id &&
       shopifyLineItem.shopify_variant_id &&
+      shopifyLineItem.shopify_quantity &&
       shopifyLineItem.shopify_price;
 
     if (!isShopifyLineItemDataValid) continue;
@@ -46,10 +47,11 @@ const getTransformedShopifyLineItemsData = async (configuration, shopifyCustomer
     isShopifyLineItemDataValid = false;
     transformedShopifyLineItem = {};
 
-    calculatedLineItemPoints = await getCalculatedLineItemPoints(configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_price);
+    calculatedLineItemPoints = await getCalculatedLineItemPoints(configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
 
     transformedShopifyLineItem.shopify_product_id = shopifyLineItem.shopify_product_id;
     transformedShopifyLineItem.shopify_variant_id = shopifyLineItem.shopify_variant_id;
+    transformedShopifyLineItem.shopify_quantity = shopifyLineItem.shopify_quantity;
     transformedShopifyLineItem.shopify_price = shopifyLineItem.shopify_price;
     transformedShopifyLineItem.points = calculatedLineItemPoints;
 

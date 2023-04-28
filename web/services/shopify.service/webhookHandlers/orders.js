@@ -23,6 +23,7 @@ const OrdersWebhookHandlers = {
               {
                 shopify_product_id: line_item.product_id,
                 shopify_variant_id: line_item.variant_id,
+                shopify_quantity: line_item.quantity,
                 shopify_price: line_item.price,
               }
             )),
@@ -30,8 +31,7 @@ const OrdersWebhookHandlers = {
             shopify_order_number: payload.order_number,
           },
         ];
-  
-        shop = "stax-app-development.myshopify.com"; // for test only, delete for production
+
         const response = await orderService.create(shop, documents);
         console.log('response: ', response);
       }
