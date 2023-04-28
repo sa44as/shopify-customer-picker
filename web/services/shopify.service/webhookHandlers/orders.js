@@ -12,7 +12,11 @@ const OrdersWebhookHandlers = {
     callbackUrl: "/api/webhooks",
     callback: async (topic, shop, body, webhookId) => {
       const payload = JSON.parse(body);
-
+      const isCustomerHasAccount = payload.customer.verified_email;
+      if (!isCustomerHasAccount) {
+        console.log('This customer is not registered');
+        return;
+      }
       const createOrder = async (shop, payload) => {
         const documents = [
           {
