@@ -4,7 +4,7 @@ const orderController = {
   find: async (req, res) => {
     const response = await orderService.find(
       {
-        shop: req.params.shop,
+        shop: req.get('origin').replace(/(^\w+:|^)\/\//, ''),
         shopify_customer_id: req.params.shopify_customer_id,
       }
     );

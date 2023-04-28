@@ -55,10 +55,8 @@ const corsOptions = {
       },
       'shop'
     );
-    console.log('shopifySessions: ', shopifySessions);
     return callback(!shopifySessions.length, origin);
-  },
-  // preflightContinue: false,
+  }
 }
 
 app.use(express.json());
