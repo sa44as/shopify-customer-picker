@@ -49,11 +49,14 @@ const corsOptions = {
     console.log('origin: ', origin);
     // db.loadOrigins is an example call to load
     // a list of origins from a backing database
-    const shopifySessions = await shopifySessionService.find(null, 'shop');
-    const origins = shopifySessions.map((shopifySession) => 'https://' + shopifySession.shop);
+    const shopifySessions = await shopifySessionService.find(
+      {
+        shop: origin.replace(/(^\w+:|^)\/\//, '')
+      },
+      'shop'
+    );
     console.log('shopifySessions: ', shopifySessions);
-    console.log('origins: ', origins);
-    return callback(null, origins);
+    return callback(!shopifySessions.length, origin);
   }
 }
 
