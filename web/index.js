@@ -45,7 +45,7 @@ app.post(
 // app.use("/api/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
 
 const corsOptions = {
-  origin: async (callback) => {
+  origin: async (origin, callback) => {
     // db.loadOrigins is an example call to load
     // a list of origins from a backing database
     const shopifySessions = await shopifySessionService.find(null, 'shop');
