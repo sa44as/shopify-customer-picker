@@ -13,7 +13,7 @@ const OrdersWebhookHandlers = {
     callback: async (topic, shop, body, webhookId) => {
       const payload = JSON.parse(body);
       const isCustomerHasAccount = payload.customer.verified_email;
-      console.log('customer.email: ', customer.email);
+      console.log('payload.customer.email: ', payload.customer.email);
       if (!isCustomerHasAccount) {
         console.log('This customer is not registered');
         return;
