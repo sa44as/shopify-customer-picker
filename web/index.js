@@ -46,6 +46,7 @@ app.post(
 
 const corsOptions = {
   origin: async (origin, callback) => {
+    console.log('origin: ', origin);
     // db.loadOrigins is an example call to load
     // a list of origins from a backing database
     const shopifySessions = await shopifySessionService.find(null, 'shop');
