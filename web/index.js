@@ -39,29 +39,43 @@ app.post(
   })
 );
 
-// If you are adding routes outside of the /api path, remember to
-// also add a proxy rule for them in web/frontend/vite.config.js
-
-// app.use("/api/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
-
-const corsOptions = {
-  origin: async (origin, callback) => {
-    console.log('origin: ', origin);
-    // db.loadOrigins is an example call to load
-    // a list of origins from a backing database
-    const shopifySessions = await shopifySessionService.find(
+const corsOptions = async (req, callback) => {
+  const shopifySessions = await shopifySessionService.find(
+    {
+      shop: origin.replace(/(^\w+:|^)\/\//, '')
+    },
+    'shop'
+  );
+  
+  if (shopifySessions.length < 1) {
+    return callback(
       {
-        shop: origin.replace(/(^\w+:|^)\/\//, '')
+        err: 'CORS is disabled for request from origin: ' + origin
       },
-      'shop'
+      {
+        origin: origin
+      }
     );
-    return callback(!shopifySessions.length, origin);
   }
+
+  const shopifySession = shopifySessions[0];
+  req.shopifySession = shopifySession;
+  return callback(
+    null,
+    {
+      origin: origin
+    }
+  );
 }
 
 app.use(express.json());
-app.use('/api/v1/order', cors(corsOptions), orderRoutes());
 
+app.use('/api/external/v1/order', cors(corsOptions), orderRoutes());
+
+// If you are adding routes outside of the /api path, remember to
+// also add a proxy rule for them in web/frontend/vite.config.js
+app.use("/api/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
+  
 app.get("/api/products/count", async (_req, res) => {
   const countData = await shopify.api.rest.Product.count({
     session: res.locals.shopify.session,

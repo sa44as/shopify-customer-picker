@@ -2,9 +2,10 @@ import { orderService } from "../services/map.js";
 
 const orderController = {
   find: async (req, res) => {
+    console.log('req.shopifySession: ', req.shopifySession);
     const response = await orderService.find(
       {
-        shop: req.get('origin').replace(/(^\w+:|^)\/\//, ''),
+        shopify_session: req.shopifySession._id,
         shopify_customer_id: req.params.shopify_customer_id,
       }
     );
