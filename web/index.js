@@ -40,9 +40,10 @@ app.post(
 );
 
 const corsOptions = async (req, callback) => {
+  const origin = req.get('origin');
   const shopifySessions = await shopifySessionService.find(
     {
-      shop: req.get('origin').replace(/(^\w+:|^)\/\//, '')
+      shop: origin.replace(/(^\w+:|^)\/\//, '')
     },
     'shop'
   );
