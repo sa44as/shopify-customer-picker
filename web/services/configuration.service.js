@@ -2,6 +2,7 @@ import { configurationModel, shopifySessionModel } from "../models/map.js";
 
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
+    console.log('###########################data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
         const documents = [
