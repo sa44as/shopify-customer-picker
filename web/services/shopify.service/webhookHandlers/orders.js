@@ -12,10 +12,8 @@ const OrdersWebhookHandlers = {
     callbackUrl: "/api/webhooks",
     callback: async (topic, shop, body, webhookId) => {
       const payload = JSON.parse(body);
-      const isCustomerHasAccount = payload.customer.verified_email;
-      const customerState = payload.customer.state;
-      const hasAccount = payload.customer.has_account;
-      console.log('payload.customer.email: ', payload.customer.email, "isCustomerHasAccount: ", isCustomerHasAccount, "customerState: ", customerState, "hasAccount: ", hasAccount);
+      const isCustomerHasAccount = payload.customer.state === "enabled";
+
       if (!isCustomerHasAccount) {
         console.log('This customer is not registered');
         return;
