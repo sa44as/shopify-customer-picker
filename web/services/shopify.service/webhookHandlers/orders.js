@@ -14,7 +14,8 @@ const OrdersWebhookHandlers = {
       const payload = JSON.parse(body);
       const isCustomerHasAccount = payload.customer.verified_email;
       const customerState = payload.customer.state;
-      console.log('payload.customer.email: ', payload.customer.email, "isCustomerHasAccount: ", isCustomerHasAccount, "customerState: ", customerState);
+      const hasAccount = payload.customer.has_account;
+      console.log('payload.customer.email: ', payload.customer.email, "isCustomerHasAccount: ", isCustomerHasAccount, "customerState: ", customerState, "hasAccount: ", hasAccount);
       if (!isCustomerHasAccount) {
         console.log('This customer is not registered');
         return;
