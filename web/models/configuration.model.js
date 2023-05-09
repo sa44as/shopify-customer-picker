@@ -39,6 +39,33 @@ const configurationSchema = new Schema(
         },
       }
     ],
+    dates_points: [
+      {
+        from: {
+          type: Date,
+          required: true,
+        },
+        to: {
+          type: Date,
+          required: true,
+        },
+        points: {
+          type: Number,
+          required: true,
+          default: 1,
+        },
+      }
+    ],
+    pre_sale_products_points: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
+    gift_card_products_points: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
   },
   { timestamps: true }
 );
