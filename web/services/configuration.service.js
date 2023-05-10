@@ -5,7 +5,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     console.log('###########################data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
-        const currentDate = Date.now();
+        const currentDate = new Date();
         const tomorrowDate = currentDate.setDate(currentDate.getDate() + 1);
         console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
         const documents = [

@@ -15,7 +15,7 @@ const getCalculatedOrderPoints = async (transformedShopifyLineItemsData) => {
 }
 
 const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, shopifyProductId, shopifyQuantity, shopifyPrice) => {
-  const currentDate = Date.now();
+  const currentDate = new Date();
 
   const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id == shopifyCustomerId);
   const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id == shopifyProductId);
