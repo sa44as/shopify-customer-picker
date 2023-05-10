@@ -5,6 +5,9 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     console.log('###########################data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
+        const currentDate = Date.now();
+        const tomorrowDate = currentDate.setDate(currentDate.getDate() + 1);
+        console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
         const documents = [
           {
             shopify_session__id: data.fullDocument._id,
@@ -20,7 +23,16 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
                 shopify_customer_id: 115310627314723950,
                 points: 3,
               },
-            ]
+            ],
+            dates_points: [
+              {
+                from: currentDate,
+                to: tomorrowDate,
+                points: 10,
+              }
+            ],
+            pre_sale_products_points: 20,
+            gift_card_products_points: 30,
             // end of is set for test
           }
         ];
