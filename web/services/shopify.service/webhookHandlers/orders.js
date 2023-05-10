@@ -15,7 +15,7 @@ const OrdersWebhookHandlers = {
       const isCustomerHasAccount = payload.customer.state === "enabled";
 
       if (!isCustomerHasAccount) {
-        console.log('This customer is not registered');
+        console.log("This customer doesn't have an account.");
         return;
       }
       const createOrder = async (shop, payload) => {
