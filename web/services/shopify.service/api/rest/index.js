@@ -1,4 +1,4 @@
-import { shopify } from "../index.js";
+import { shopify } from "../../index.js";
 
 const shopifyApiRest = {
   getProduct: async (session, id) => {
