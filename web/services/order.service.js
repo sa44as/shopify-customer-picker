@@ -23,7 +23,7 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const shopifyVariant = isShopifyVariantFound ? getShopifyVariant[0] : null;
   const isPreSale = isShopifyVariantFound ? (
       shopifyVariant.inventory_quantity < 1 && shopifyVariant.inventory_policy === 'continue' ||
-      shopifyVariant.inventory_quantity > 0 && shopifyProduct.tags.contains('bn_pre_important')
+      shopifyVariant.inventory_quantity > 0 && shopifyProduct.tags.includes('bn_pre_important')
     ) : false;
   const isGiftCard = isShopifyProductfound ? shopifyProduct.product_type === 'Gift Cards' : false;
 
