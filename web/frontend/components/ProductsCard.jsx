@@ -21,7 +21,7 @@ export function ProductsCard() {
     isLoading: isLoadingCount,
     isRefetching: isRefetchingCount,
   } = useAppQuery({
-    url: "/api/products/count",
+    url: "/api/internal/products/count",
     reactQueryOptions: {
       onSuccess: () => {
         setIsLoading(false);

@@ -1,5 +1,6 @@
 import { orderModel, configurationModel } from "../models/map.js";
 import { shopifySessionService } from "./map.js";
+import { shopifyApiRest } from "shopify.service/api/rest";
 
 const getCalculatedPoints = (multiplier, shopifyQuantity, shopifyPrice) => {
   const calculatedPoints = multiplier * shopifyQuantity * shopifyPrice;
@@ -14,7 +15,10 @@ const getCalculatedOrderPoints = async (transformedShopifyLineItemsData) => {
   return calculatedPoints;
 }
 
-const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, shopifyProductId, shopifyQuantity, shopifyPrice) => {
+const getCalculatedLineItemPoints = async (shopifySession, configuration, shopifyCustomerId, shopifyProductId, shopifyQuantity, shopifyPrice) => {
+  const shopifyProduct = await shopifyApiRest.getProduct(shopifySession, shopifyProductId);
+  console.log("shopifyProduct: ", shopifyProduct);
+
   const currentDate = new Date();
 
   const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id == shopifyCustomerId);
@@ -34,7 +38,7 @@ const getCalculatedLineItemPoints = async (configuration, shopifyCustomerId, sho
   return calculatedPoints;
 }
 
-const getTransformedShopifyLineItemsData = async (configuration, shopifyCustomerId, shopifyLineItems) => {
+const getTransformedShopifyLineItemsData = async (shopifySession, configuration, shopifyCustomerId, shopifyLineItems) => {
   const isShopifyLineItemsDataValid = Array.isArray(shopifyLineItems) && shopifyLineItems.length;
   if (!isShopifyLineItemsDataValid) return null;
 
@@ -52,7 +56,7 @@ const getTransformedShopifyLineItemsData = async (configuration, shopifyCustomer
     isShopifyLineItemDataValid = false;
     transformedShopifyLineItem = {};
 
-    calculatedLineItemPoints = await getCalculatedLineItemPoints(configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
+    calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
 
     transformedShopifyLineItem.shopify_product_id = shopifyLineItem.shopify_product_id;
     transformedShopifyLineItem.shopify_variant_id = shopifyLineItem.shopify_variant_id;
@@ -96,7 +100,7 @@ const getTransformedOrderData = async (shopifySession, documents) => {
 
     doc = {};
 
-    transformedShopifyLineItemsData = await getTransformedShopifyLineItemsData(configuration, item.shopify_customer_id, item.shopify_line_items);
+    transformedShopifyLineItemsData = await getTransformedShopifyLineItemsData(shopifySession, configuration, item.shopify_customer_id, item.shopify_line_items);
     calculatedOrderPoints = await getCalculatedOrderPoints(transformedShopifyLineItemsData);
 
     doc.shopify_session = shopifySession._id;
