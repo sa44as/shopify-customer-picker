@@ -15,9 +15,17 @@ const getCalculatedOrderPoints = async (transformedShopifyLineItemsData) => {
   return calculatedPoints;
 }
 
-const getCalculatedLineItemPoints = async (shopifySession, configuration, shopifyCustomerId, shopifyProductId, shopifyQuantity, shopifyPrice) => {
+const getCalculatedLineItemPoints = async (shopifySession, configuration, shopifyCustomerId, shopifyProductId, shopifyVariantId, shopifyQuantity, shopifyPrice) => {
   const shopifyProduct = await shopifyApiRest.getProduct(shopifySession, shopifyProductId);
-  console.log("shopifyProduct: ", shopifyProduct);
+  const isShopifyProductfound = shopifyProduct && Array.isArray(shopifyProduct.variants);
+  const getShopifyVariant = isShopifyProductfound ? shopifyProduct.variants.filter((variant) => variant.id === shopifyVariantId) : null;
+  const isShopifyVariantFound = getShopifyVariant.length;
+  const shopifyVariant = isShopifyVariantFound ? getShopifyVariant[0] : null;
+  const isPreSale = isShopifyVariantFound ? (
+      shopifyVariant.inventory_quantity < 1 && shopifyVariant.inventory_policy === 'continue' ||
+      shopifyVariant.inventory_quantity > 0 && shopifyProduct.tags.contains('bn_pre_important')
+    ) : false;
+  const isGiftCard = isShopifyProductfound ? shopifyProduct.product_type === 'Gift Cards' : false;
 
   const currentDate = new Date();
 
@@ -30,8 +38,10 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const shopifyCustomerPoints = getShopifyCustomerPoints.length ? getShopifyCustomerPoints[0].points : 0;
   const shopifyProductPoints = getShopifyProductPoints.length ? getShopifyProductPoints[0].points : 0;
   const datePoints = getDatesPoints.length ? getDatesPoints[0].points : 0;
+  const preSaleProductsPoints = isPreSale ? configuration.pre_sale_products_points : 0;
+  const giftCardProductsPoints = isGiftCard ? configuration.gift_card_products_points : 0;
 
-  const allLevelsPoints = [defaultPoints, shopifyCustomerPoints, shopifyProductPoints, datePoints];
+  const allLevelsPoints = [defaultPoints, shopifyCustomerPoints, shopifyProductPoints, datePoints, preSaleProductsPoints, giftCardProductsPoints];
   const multiplier = Math.max(...allLevelsPoints);
 
   const calculatedPoints = getCalculatedPoints(multiplier, shopifyQuantity, shopifyPrice);
@@ -56,7 +66,7 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
     isShopifyLineItemDataValid = false;
     transformedShopifyLineItem = {};
 
-    calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
+    calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_variant_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
 
     transformedShopifyLineItem.shopify_product_id = shopifyLineItem.shopify_product_id;
     transformedShopifyLineItem.shopify_variant_id = shopifyLineItem.shopify_variant_id;
