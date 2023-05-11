@@ -11,6 +11,7 @@ const shopifyApiRest = {
       );
       return response;
     } catch (err) {
+      console.log("shopifyApiRest.getProduct.err: ", err);
       return null;
     }
   }
