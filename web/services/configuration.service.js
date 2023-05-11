@@ -8,6 +8,12 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
         console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
+        const datesPoints = {
+          from: currentDate,
+          to: tomorrowDate,
+          points: 10,
+        };
+        console.log('datesPoints: ', datesPoints);
         const documents = [
           {
             shopify_session__id: data.fullDocument._id,
@@ -25,11 +31,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
               },
             ],
             dates_points: [
-              {
-                from: currentDate,
-                to: tomorrowDate,
-                points: 10,
-              }
+              datesPoints,
             ],
             pre_sale_products_points: 20,
             gift_card_products_points: 30,
