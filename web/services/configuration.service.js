@@ -6,7 +6,8 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     switch (data.operationType) {
       case 'insert':
         const currentDate = new Date();
-        const tomorrowDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+        const tomorrowDate = new Date(currentDate);
+        tomorrowDate.setDate(currentDate.getDate() + 1);
         console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
         const datesPoints = {
           from: currentDate,
