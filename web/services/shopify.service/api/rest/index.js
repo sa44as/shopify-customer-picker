@@ -3,7 +3,7 @@ import { shopify } from "../../index.js";
 const shopifyApiRest = {
   getProduct: async (session, id) => {
     try {
-      const response = await shopify.rest.Product.find(
+      const response = await shopify.api.rest.Product.find(
         {
           session,
           id,
