@@ -144,7 +144,7 @@ const getTransformedConfigurationData = (documents) => {
 
     transformedProductsPoints = getTransformedProductsPointsData(item.products_points);
     transformedCustomersPoints = getTransformedCustomersPointsData(item.customers_points);
-    transformedDatesPoints = getTransformedDatesPoints(item.dates_points);
+    transformedDatesPoints = getTransformedDatesPointsData(item.dates_points);
 
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
     if (item.default_points) doc.default_points = item.default_points;
