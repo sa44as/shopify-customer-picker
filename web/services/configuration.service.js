@@ -95,20 +95,47 @@ const getTransformedCustomersPointsData = (customersPoints) => {
   return transformedCustomersPoints.length ? transformedCustomersPoints : null;
 }
 
+const getTransformedDatesPointsData = (datesPoints) => {
+  const isDatesPointsDataValid = Array.isArray(datesPoints) && datesPoints.length;
+  if (!isDatesPointsDataValid) return null;
+
+  let transformedDatesPoints = [];
+
+  let isDatePointsDataValid, transformedDatePoints;
+  for (const datePoints of datesPoints) {
+    isDatePointsDataValid = datePoints.from && datePoints.to && datePoints.points;
+    if (!isDatePointsDataValid) continue;
+
+    isDatePointsDataValid = false;
+    transformedDatePoints = {};
+
+    transformedDatePoints.from = datePoints.from;
+    transformedDatePoints.to = datePoints.to;
+    transformedDatePoints.points = datePoints.points;
+
+    transformedDatesPoints = [...transformedDatesPoints, transformedDatePoints];
+  }
+
+  return transformedDatesPoints.length ? transformedDatesPoints : null;
+}
+
 const getTransformedConfigurationData = (documents) => {
   const isDocumentsDataValid = Array.isArray(documents) && documents.length && documents[0];
   if (!isDocumentsDataValid) return null;
 
   let transformedData = [];
 
-  let isDocumentDataValid, doc, transformedProductsPoints, transformedCustomersPoints;
+  let isDocumentDataValid, doc, transformedProductsPoints, transformedCustomersPoints, transformedDatesPoints;
   for (const item of documents) {
     isDocumentDataValid = typeof item === 'object' &&
       (
         item.shopify_session__id ||
         item.default_points ||
         item.product_points ||
-        item.customer_points
+        item.customer_points ||
+        item.dates_points ||
+        item.pre_sale_products_points ||
+        item.gift_card_products_points
       );
     
     if (!isDocumentDataValid) continue;
@@ -117,11 +144,15 @@ const getTransformedConfigurationData = (documents) => {
 
     transformedProductsPoints = getTransformedProductsPointsData(item.products_points);
     transformedCustomersPoints = getTransformedCustomersPointsData(item.customers_points);
+    transformedDatesPoints = getTransformedDatesPoints(item.dates_points);
 
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
     if (item.default_points) doc.default_points = item.default_points;
     if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
+    if (transformedDatesPoints) doc.dates_points = transformedDatesPoints;
+    if (item.pre_sale_products_points) doc.pre_sale_products_points = item.pre_sale_products_points;
+    if (item.gift_card_products_points) doc.gift_card_products_points = item.gift_card_products_points;
 
     transformedData = [...transformedData, doc];
   }
