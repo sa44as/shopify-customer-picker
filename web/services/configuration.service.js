@@ -1,10 +1,15 @@
 import { configurationModel, shopifySessionModel } from "../models/map.js";
+import { shopifyApiRest } from "./map.js";
 
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
     console.log('###########################data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
+        const shopifySession = data.fullDocument;
+        const createPriceRuleResponse = await shopifyApiRest.createPriceRule(shopifySession);
+        console.log("createPriceRuleResponse: ", createPriceRuleResponse);
+
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
         tomorrowDate.setDate(currentDate.getDate() + 1);
@@ -17,7 +22,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
         console.log('datesPoints: ', datesPoints);
         const documents = [
           {
-            shopify_session__id: data.fullDocument._id,
+            shopify_session__id: shopifySession._id,
             // is set for test
             products_points: [
               {

@@ -1,6 +1,5 @@
 import { orderModel, configurationModel } from "../models/map.js";
-import { shopifySessionService } from "./map.js";
-import { shopifyApiRest } from "./shopify.service/api/rest/index.js";
+import { shopifySessionService, shopifyApiRest } from "./map.js";
 
 const getCalculatedPoints = (multiplier, shopifyQuantity, shopifyPrice) => {
   const calculatedPoints = multiplier * shopifyQuantity * shopifyPrice;
