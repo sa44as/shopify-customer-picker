@@ -70,7 +70,7 @@ const shopifyApiRest = {
       console.log('createDiscountCode.response: ', response);
       return response;
     } catch (err) {
-      console.log('createDiscountCode.err: ', response);
+      console.log('createDiscountCode.err: ', err);
       return null;
     }
   },
