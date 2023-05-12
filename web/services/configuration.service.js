@@ -7,8 +7,9 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
-        const createPriceRuleResponse = await shopifyApiRest.createPriceRule(shopifySession);
+        const createPriceRuleResponse = await shopifyApiRest.createPriceRule(shopifySession, 115310627314723950, 7489095598319);
         const priceRules = await shopifyApiRest.listPriceRules(shopifySession);
+        const createDiscountCOde = await shopifyApiRest.createDiscountCode(shopifySession, priceRules[0].id, priceRules[0].title);
 
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
