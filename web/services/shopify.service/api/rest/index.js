@@ -27,7 +27,7 @@ const shopifyApiRest = {
       price_rule.target_type = "line_item";
       price_rule.target_selection = "entitled";
       price_rule.allocation_method = "each";
-      price_rule.starts_at = "2018-03-22T00:00:00-00:00";
+      price_rule.starts_at = "2023-05-12T00:00:00-00:00";
       // price_rule.prerequisite_collection_ids = [
       //   841564295
       // ];
