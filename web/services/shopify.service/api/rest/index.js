@@ -21,6 +21,7 @@ const shopifyApiRest = {
       price_rule.title = "BuyProduct[7489095598319]WithRewardPoints";
       price_rule.value_type = "percentage";
       price_rule.value = "-100.0";
+      price_rule.customer_selection = "prerequisite";
       price_rule.target_type = "line_item";
       price_rule.target_selection = "entitled";
       price_rule.allocation_method = "each";
