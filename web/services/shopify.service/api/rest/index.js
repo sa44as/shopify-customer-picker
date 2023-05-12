@@ -20,7 +20,7 @@ const shopifyApiRest = {
       console.log('createPriceRule.session: ', session);
       const price_rule = new shopify.api.rest.PriceRule({session});
       console.log('price_rule: ', price_rule);
-      price_rule.title = "BuyWithRewardPoints";
+      price_rule.title = "BuyWithRewardPointsAPI";
       price_rule.value_type = "percentage";
       price_rule.value = "-100.0";
       price_rule.customer_selection = "all";
