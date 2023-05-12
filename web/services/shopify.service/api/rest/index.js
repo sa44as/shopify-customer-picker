@@ -54,7 +54,7 @@ const shopifyApiRest = {
   },
   listPriceRules: async (session) => {
     try {
-      const response = await shopify.rest.PriceRule.all({session});
+      const response = await shopify.api.rest.PriceRule.all({session});
       console.log('listPriceRules.response: ', response);
       return response;
     } catch (err) {
