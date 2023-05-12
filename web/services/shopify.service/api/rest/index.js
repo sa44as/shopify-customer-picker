@@ -32,10 +32,10 @@ const shopifyApiRest = {
       price_rule.entitled_product_ids = [
         7489095598319
       ];
-      price_rule.prerequisite_to_entitlement_quantity_ratio = {
-        "prerequisite_quantity": 0,
-        "entitled_quantity": 1
-      };
+      // price_rule.prerequisite_to_entitlement_quantity_ratio = {
+      //   "prerequisite_quantity": 0,
+      //   "entitled_quantity": 1
+      // };
       price_rule.allocation_limit = 1;
 
       const response = await price_rule.save(
