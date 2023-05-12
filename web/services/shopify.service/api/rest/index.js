@@ -28,14 +28,12 @@ const shopifyApiRest = {
       price_rule.target_selection = "entitled";
       price_rule.allocation_method = "each";
       price_rule.starts_at = "2023-05-12T00:00:00-00:00";
-      price_rule.prerequisite_collection_ids = [
-        841564295
-      ];
+      price_rule.prerequisite_collection_ids = [];
       price_rule.entitled_product_ids = [
         7489095598319
       ];
       price_rule.prerequisite_to_entitlement_quantity_ratio = {
-        "prerequisite_quantity": 2,
+        "prerequisite_quantity": 0,
         "entitled_quantity": 1
       };
       price_rule.allocation_limit = 1;
