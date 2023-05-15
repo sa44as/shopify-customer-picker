@@ -8,6 +8,19 @@ const configurationSchema = new Schema(
       unique: true,
       ref: 'shopify_sessions',
     },
+    reward_products: [
+      {
+        shopify_product_id: {
+          type: String,
+          required: true,
+        },
+        sell_with_money: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
+      }
+    ],
     default_points: {
       type: Number,
       required: true,
