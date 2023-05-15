@@ -2,7 +2,6 @@ import { orderService, shopifyApiRest } from "../services/map.js";
 
 const orderController = {
   find: async (req, res) => {
-    console.log('req.shopifySession: ', req.shopifySession);
     const response = await orderService.find(
       {
         shopify_session: req.shopifySession._id,
