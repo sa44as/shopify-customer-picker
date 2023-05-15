@@ -77,7 +77,7 @@ app.use('/api/external/v1/order', orderRoutes());
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/frontend/vite.config.js
 app.use("/api/internal/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
-  
+
 app.get("/api/internal/products/count", async (_req, res) => {
   console.log('res.locals.shopify.session: ', res.locals.shopify.session);
   const countData = await shopify.api.rest.Product.count({
