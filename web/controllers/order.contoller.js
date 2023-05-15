@@ -50,7 +50,7 @@ const orderController = {
       ).status(400);
     }
 
-    const priceRules = await shopifyApiRest.listPriceRules(shopifySession);
+    const priceRules = await shopifyApiRest.listPriceRules(req.shopifySession);
     const isPriceRulesValid = priceRules && Array.isArray(priceRules) && priceRules.length;
     if (!isPriceRulesValid) {
       return res.json(
@@ -62,7 +62,7 @@ const orderController = {
       ).status(400);
     }
 
-    const createDiscountCode = await shopifyApiRest.createDiscountCode(shopifySession, priceRules[0].id, priceRules[0].title);
+    const createDiscountCode = await shopifyApiRest.createDiscountCode(req.shopifySession, priceRules[0].id, priceRules[0].title);
     if (createDiscountCode === null) {
       return res.json(
         {
