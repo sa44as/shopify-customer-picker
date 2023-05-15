@@ -71,7 +71,8 @@ const corsOptions = async (req, callback) => {
 
 app.use(express.json());
 
-app.use('/api/external/v1/order/*', cors(corsOptions), orderRoutes());
+app.use('/api/external/*', cors(corsOptions));
+app.use('/api/external/v1/order', orderRoutes());
 
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/frontend/vite.config.js
