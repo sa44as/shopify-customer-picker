@@ -16,7 +16,7 @@ const orderController = {
     ).status(200);
   },
   beforeAddToCart: async (req, res) => {
-    console.log('req.shopifySession');
+    console.log('req.shopifySession: ', req.shopifySession);
     const isProductAbleToBuyWithPoints = true; // to do
     if (!isProductAbleToBuyWithPoints) {
       return res.json(
