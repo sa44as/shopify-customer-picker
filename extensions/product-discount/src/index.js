@@ -36,32 +36,41 @@ export default /**
     }
 
     let usedRewardPoints = 0;
-    let isProductVariant, getPointsPrice, pointsPrice, eligibleQuantity, isEligible, isStillEligible, isAllQuantityEligible;
-    const splitedLines = [];
+    let isProductVariant, getProductConfigurations, productConfigurations, pointsPrice, eligibleQuantity, isEligible, isStillEligible, isAllQuantityEligible, buyWith;
+    // lines quantity remainders, can be used later
+    // const splitedLines = [];
     const targets = input.cart.lines
       // Use the configured quantity instead of a hardcoded value
       .filter(line => {
-        eligibleQuantity = 0;
+        buyWith = line?.attribute?.value ?? null;
+        if (buyWith != 'points')
+          return false;
         isProductVariant = line.merchandise.__typename == "ProductVariant";
-        if (!isProductVariant) return false;
-        getPointsPrice = line?.merchandise?.product?.metafield?.value ?? null;
-        if (!getPointsPrice) return false;
-        pointsPrice = Number(getPointsPrice);
+        if (!isProductVariant)
+          return false;
+        eligibleQuantity = 0;
+        getProductConfigurations = line?.merchandise?.product?.metafield?.value ?? null;
+        productConfigurations = getProductConfigurations && JSON.parse(getProductConfigurations);
+        if (!productConfigurations)
+          return false;
+        pointsPrice = Number(productConfigurations.points_price);
         isEligible = usedRewardPoints + pointsPrice <= configuration.rewardPoints;
         if (isEligible && line.quantity > 1) {
           for (let quantity = 1; quantity <= line.quantity; quantity++) {
             isStillEligible = usedRewardPoints + pointsPrice * quantity <= configuration.rewardPoints;
-            if (!isStillEligible) break;
+            if (!isStillEligible)
+              break;
             eligibleQuantity++;
           }
           isAllQuantityEligible = eligibleQuantity === line.quantity;
           if (!isAllQuantityEligible) {
-            splitedLines.push(
-              {
-                ...line,
-                quantity: line.quantity - eligibleQuantity,
-              }
-            );
+            // lines quantity remainders, can be used later
+            // splitedLines.push(
+            //   {
+            //     ...line,
+            //     quantity: line.quantity - eligibleQuantity,
+            //   }
+            // );
             line.quantity = eligibleQuantity;
           }
         }
@@ -78,13 +87,14 @@ export default /**
         });
       });
     
+    // lines quantity remainders, can be used later
     // if (splitedLines.length) {
     //   for (const line of splitedLines) {
     //     const variant = /** @type {ProductVariant} */ (line.merchandise);
     //     const target = /** @type {Target} */ ({
     //       productVariant: {
     //         id: variant.id,
-    //         quantity: line.quantity,
+    //         quantity: 0,
     //       }
     //     });
     //     targets.push(target);

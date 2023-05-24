@@ -2,12 +2,15 @@ query Input {
   cart {
     lines {
       quantity
+      attribute(key: "Buy with"){
+        value
+      }
       merchandise {
         __typename
         ...on ProductVariant {
             id
             product {
-              metafield(namespace: "loyalty-program", key: "points-price"){
+              metafield(namespace: "loyalty_program", key: "configurations"){
                 value
               }
             }
@@ -16,7 +19,7 @@ query Input {
     }
     buyerIdentity {
       customer {
-        metafield(namespace: "loyalty-program", key: "reward-points"){
+        metafield(namespace: "loyalty_program", key: "reward_points"){
           value
         }
       }

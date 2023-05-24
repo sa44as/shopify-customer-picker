@@ -8,8 +8,12 @@ import productDiscounts from './index';
 describe('product discounts function', () => {
   it('returns no discounts without configuration', () => {
     const result = productDiscounts({
-      discountNode: {
-        metafield: null
+      cart: {
+        buyerIdentity: {
+          customer: {
+            metafield: null
+          }
+        }
       }
     });
     const expected = /** @type {FunctionResult} */ ({

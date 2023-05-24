@@ -24,14 +24,15 @@ const OrdersWebhookHandlers = {
             shopify_webhook_id: webhookId,
             shopify_order_id: payload.id,
             shopify_customer_id: payload.customer.id,
-            shopify_line_items: payload.line_items.map((line_item) => (
-              {
+            shopify_line_items: payload.line_items.map((line_item) => {
+              console.log("line_item", JSON.stringify(line_item));
+              return {
                 shopify_product_id: line_item.product_id,
                 shopify_variant_id: line_item.variant_id,
                 shopify_quantity: line_item.quantity,
                 shopify_price: line_item.price,
               }
-            )),
+            )},
             shopify_total_line_items_price: payload.total_line_items_price,
             shopify_order_number: payload.order_number,
           },
