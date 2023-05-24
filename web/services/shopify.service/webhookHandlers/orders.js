@@ -32,7 +32,7 @@ const OrdersWebhookHandlers = {
                 shopify_quantity: line_item.quantity,
                 shopify_price: line_item.price,
               }
-            )},
+            }),
             shopify_total_line_items_price: payload.total_line_items_price,
             shopify_order_number: payload.order_number,
           },
