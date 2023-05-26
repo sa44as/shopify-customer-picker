@@ -12,8 +12,8 @@
     "node": ">=14.13.1"
   },
   "dependencies": {
-    "@shopify/shopify-app-express": "^1.1.0",
-    "@shopify/shopify-app-session-storage-mongodb": "^1.0.5",
+    "@shopify/shopify-app-express": "^2.1.2",
+    "@shopify/shopify-app-session-storage-mongodb": "^1.0.8",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
