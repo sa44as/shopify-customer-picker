@@ -1,5 +1,5 @@
 import { orderService, shopifyApiRest } from "../services/map.js";
-
+// to do, below all methods need to be reviewed, and changed as necessary, controller is not finilized
 const orderController = {
   find: async (req, res) => {
     const response = await orderService.find(

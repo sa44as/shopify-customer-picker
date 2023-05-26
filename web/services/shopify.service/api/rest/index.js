@@ -1,20 +1,59 @@
 import { shopify } from "../../index.js";
 
 const shopifyApiRest = {
-  getProduct: async (session, id) => {
-    try {
-      const response = await shopify.api.rest.Product.find(
-        {
-          session,
-          id,
+  product: {
+    get: async (session, id) => {
+      try {
+        const response = await shopify.api.rest.Product.find(
+          {
+            session,
+            id,
+          }
+        );
+        return response;
+      } catch (err) {
+        console.log("shopifyApiRest.product.get.err: ", err);
+        return null;
+      }
+    },
+    metafield: {
+      create: async (session, productId, namespace, key, value, type) => {
+        try {
+          const metafield = new shopify.api.rest.Metafield({session});
+          metafield.product_id = productId;
+          metafield.namespace = namespace; //"loyalty_program";
+          metafield.key = key; //"configuration";
+          metafield.value = type === "json" ? JSON.stringify(value) : value;
+          metafield.type = type; //"json";
+          const response = await metafield.save(
+            {
+              update: true,
+            }
+          );
+          return response;
+        } catch (err) {
+          console.log("shopifyApiRest.product.metafield.create.err: ", err);
+          return null;
         }
-      );
-      return response;
-    } catch (err) {
-      console.log("shopifyApiRest.getProduct.err: ", err);
-      return null;
-    }
+      },
+      get: async (session, productId, id) => {
+        try {
+          const response = await shopify.rest.Metafield.find(
+            {
+              session,
+              product_id: productId,
+              id,
+            }
+          );
+          return response;
+        } catch (err) {
+          console.log("shopifyApiRest.product.metafield.get.err: ", err);
+          return null;
+        }
+      },
+    },
   },
+  // not used in project, can be necessary for the furter development, leaving here
   createPriceRule: async (session, customerId, productId) => {
     try {
       const price_rule = new shopify.api.rest.PriceRule({session});
@@ -74,6 +113,7 @@ const shopifyApiRest = {
       return null;
     }
   },
+  // end of not used in project, can be necessary for the furter development, leaving here
 }
 
 export { shopifyApiRest }

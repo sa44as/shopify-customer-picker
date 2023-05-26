@@ -25,12 +25,15 @@ const OrdersWebhookHandlers = {
             shopify_order_id: payload.id,
             shopify_customer_id: payload.customer.id,
             shopify_line_items: payload.line_items.map((line_item) => {
+              // debugger
               console.log("line_item", JSON.stringify(line_item));
               return {
                 shopify_product_id: line_item.product_id,
                 shopify_variant_id: line_item.variant_id,
                 shopify_quantity: line_item.quantity,
                 shopify_price: line_item.price,
+                shopify_discount_allocations: line_item.discount_allocations,
+                shopify_properties: line_item.properties,
               }
             }),
             shopify_total_line_items_price: payload.total_line_items_price,
@@ -39,6 +42,7 @@ const OrdersWebhookHandlers = {
         ];
 
         const response = await orderService.create(shop, documents);
+        // debugger
         console.log('response: ', response);
       }
       createOrder(shop, payload);

@@ -3,11 +3,13 @@ import { shopifyApiRest } from "./map.js";
 
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
+    // debugger
     console.log('###########################data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
 
+        // is set for test, but dates functionality can be help later for dates development finalization if something will be necessary to improve or correct.
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
         tomorrowDate.setDate(currentDate.getDate() + 1);
@@ -18,19 +20,37 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
           points: 10,
         };
         console.log('datesPoints: ', datesPoints);
+        // end of is set for test
+
         const documents = [
           {
             shopify_session__id: shopifySession._id,
+            shop: shopifySession.shop,
+            state: shopifySession.state,
             // is set for test
+            reward_products: [
+              {
+                shopify_product_id: "7489095598319",
+                points_price: 79.95,
+                sell_with_money: false,
+                shopify_metafield_id: "test", // to do, need to create metafield, and get id for product with above values
+              },
+              {
+                shopify_product_id: "632910392",
+                points_price: 100,
+                sell_with_money: true,
+                shopify_metafield_id: "test", // to do, need to create metafield, and get id for product with above values
+              },
+            ],
             products_points: [
               {
-                shopify_product_id: 632910392,
+                shopify_product_id: "632910392",
                 points: 2,
               },
             ],
             customers_points: [
               {
-                shopify_customer_id: 115310627314723950,
+                shopify_customer_id: "115310627314723950",
                 points: 3,
               },
             ],

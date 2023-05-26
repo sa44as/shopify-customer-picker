@@ -1,5 +1,5 @@
 import { configurationModel } from "../models/map.js";
-
+// to do, below all methods need to be reviewed, and changed as necessary, controller is not finilized
 const configurationController = {
   find: (req, res) => {
     const response = configurationModel.find(

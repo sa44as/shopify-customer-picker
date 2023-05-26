@@ -2,10 +2,6 @@ import {Schema, model} from "mongoose";
 
 const shopifySesssionSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true
-    },  
     id: {
       type: String,
       required: true,

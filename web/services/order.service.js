@@ -14,9 +14,52 @@ const getCalculatedOrderPoints = async (transformedShopifyLineItemsData) => {
   return calculatedPoints;
 }
 
-const getCalculatedLineItemPoints = async (shopifySession, configuration, shopifyCustomerId, shopifyProductId, shopifyVariantId, shopifyQuantity, shopifyPrice) => {
-  const shopifyProduct = await shopifyApiRest.getProduct(shopifySession, shopifyProductId);
+const getCalculatedLineItemPoints = async (shopifySession, configuration, shopifyCustomerId, shopifyProductId, shopifyVariantId, shopifyQuantity, shopifyPrice, isShopifyLineItemPurchasedWithPoints) => {
+  const shopifyProduct = await shopifyApiRest.product.get(shopifySession, shopifyProductId);
   const isShopifyProductfound = shopifyProduct && Array.isArray(shopifyProduct.variants);
+  if (isShopifyLineItemPurchasedWithPoints && isShopifyProductfound) {
+    let getRewardProductConfiguration = configuration.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id === shopifyProductId);
+    let isRewardProductConfigurationFound = getRewardProductConfiguration.length;
+    if (!isRewardProductConfigurationFound) {
+      console.log('Unexpected error: The product not found in internal mongoDB database as reward product, but seems it has been purchased with points, possible reason is configuration was changed pararelly with the current order so continuing logic as reward product and minus customer reward points.');
+    }
+
+    let rewardProductConfiguration = isRewardProductConfigurationFound ? getRewardProductConfiguration[0] : null;
+    let pointsPriceFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.points_price : null;
+    let shopifyMetafieldIdFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.metafield.id : null;
+
+    let getRewardProductConfigurationFromShopifyProductMetafield = await shopifyApiRest.product.metafield.get(shopifySession, shopifyProductId, shopifyMetafieldIdFromConfiguration);
+    // debugger
+    console.log("getRewardProductConfigurationFromShopifyProductMetafield: ", getRewardProductConfigurationFromShopifyProductMetafield);
+    let isRewardProductConfigurationFromShopifyProductMetafieldFound = getRewardProductConfigurationFromShopifyProductMetafield && getRewardProductConfigurationFromShopifyProductMetafield.id;
+    if (!isRewardProductConfigurationFromShopifyProductMetafieldFound) {
+      console.log('Unexpected error: The product not found in Shopify as reward product, but seems it has been purchased with points, possible reason is configuration was changed pararelly with the current order or the product metafield has been changed manually so continuing logic as reward product and minus customer reward points.');
+    }
+
+    let rewardProductConfigurationFromShopifyProductMetafield = null;
+    try {
+      rewardProductConfigurationFromShopifyProductMetafield = JSON.parse(getRewardProductConfigurationFromShopifyProductMetafield);
+    } catch (err) {
+      console.log('Unexpected error: Can not parse rewardProductConfigurationFromShopifyProductMetafield');
+    }
+
+    if (rewardProductConfigurationFromShopifyProductMetafield?.points_price != pointsPriceFromConfiguration) {
+      console.log('Unexpected error: rewardProductConfiguration points prices are not equal when comparing internal mongo db info with info from shopify, possible reason is metafield has been changed manually.');
+    }
+
+    let pointsPrice = pointsPriceFromConfiguration || rewardProductConfigurationFromShopifyProductMetafield?.points_price;
+
+    // can be improvement, can be done later, when rewardProductConfiguration found but not on Shopify metafield, then we can update the metafield with rewardProductConfiguration values is it exists, because seems the metafield has been changed manually.
+
+    if (!pointsPrice) {
+      console.log('Unexpected error: pointsPrice not found');
+      return 0;
+    }
+
+    let calculatedPointsPrice = -(pointsPrice * shopifyQuantity);
+    return calculatedPointsPrice;
+  }
+
   const getShopifyVariant = isShopifyProductfound ? shopifyProduct.variants.filter((variant) => variant.id === shopifyVariantId) : null;
   const isShopifyVariantFound = getShopifyVariant.length;
   const shopifyVariant = isShopifyVariantFound ? getShopifyVariant[0] : null;
@@ -53,7 +96,7 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
 
   let transformedShopifyLineItems = [];
 
-  let isShopifyLineItemDataValid, transformedShopifyLineItem, calculatedLineItemPoints;
+  let isShopifyLineItemDataValid, isShopifyLineItemPurchasedWithPoints, transformedShopifyLineItem, calculatedLineItemPoints;
   for (const shopifyLineItem of shopifyLineItems) {
     isShopifyLineItemDataValid = shopifyLineItem.shopify_product_id &&
       shopifyLineItem.shopify_variant_id &&
@@ -63,9 +106,15 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
     if (!isShopifyLineItemDataValid) continue;
 
     isShopifyLineItemDataValid = false;
+    isShopifyLineItemPurchasedWithPoints = Array.isArray(shopifyLineItem.shopify_properties) &&
+      shopifyLineItem.shopify_properties.length &&
+      shopifyLineItem.shopify_properties.filter((shopifyProperty) => shopifyProperty.name === "Buy with" && shopifyProperty.value === "points") &&
+      Array.isArray(shopifyLineItem.shopify_discount_allocations) &&
+      shopifyLineItem.shopify_discount_allocations.length &&
+      shopifyLineItem.shopify_discount_allocations.filter((discountAllocation) => discountAllocation.amount - shopifyLineItem.shopify_quantity * shopifyLineItem.shopify_price === 0).length;
     transformedShopifyLineItem = {};
 
-    calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_variant_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price);
+    calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_variant_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price, isShopifyLineItemPurchasedWithPoints);
 
     transformedShopifyLineItem.shopify_product_id = shopifyLineItem.shopify_product_id;
     transformedShopifyLineItem.shopify_variant_id = shopifyLineItem.shopify_variant_id;

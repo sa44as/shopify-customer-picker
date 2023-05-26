@@ -1,5 +1,16 @@
 import {Schema, model} from "mongoose";
 
+const configurationValidation = {
+  reward_products: {
+    points_price: {
+      min: [
+        10,
+        'The value of path `{PATH}` ({VALUE}) is beneath the limit ({MIN}).'
+      ],
+    },
+  },
+}
+
 const configurationSchema = new Schema(
   {
     shopify_session: {
@@ -8,16 +19,33 @@ const configurationSchema = new Schema(
       unique: true,
       ref: 'shopify_sessions',
     },
+    shop: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
     reward_products: [
       {
         shopify_product_id: {
           type: String,
           required: true,
         },
+        points_price: {
+          type: Number,
+          required: true,
+          min: configurationValidation.reward_products.points_price.min,
+        },
         sell_with_money: {
           type: Boolean,
           required: true,
           default: false,
+        },
+        shopify_metafield_id: {
+          type: String,
+          required: true,
         },
       }
     ],

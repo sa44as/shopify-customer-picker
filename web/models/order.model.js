@@ -39,6 +39,23 @@ const orderSchema = new Schema(
           type: String,
           required: true,
         },
+        shopify_properties: [
+          {
+            name: {
+              type: String,
+            },
+            value: {
+              type: String,
+            },
+          }
+        ],
+        shopify_discount_allocations: [
+          {
+            amount: {
+              type: String,
+            }
+          }
+        ],
         points: {
           type: Number,
           required: true,
