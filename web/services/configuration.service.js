@@ -62,7 +62,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
             // end of is set for test
           }
         ];
-        const response = create(documents);
+        const response = await create(documents);
         // debugger
         console.log('configuration creation response: ', response);
         if (response.error) {
