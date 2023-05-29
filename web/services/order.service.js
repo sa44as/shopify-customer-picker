@@ -49,7 +49,7 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
 
     let pointsPrice = pointsPriceFromConfiguration || rewardProductConfigurationFromShopifyProductMetafield?.points_price;
 
-    // can be improvement, can be done later, when rewardProductConfiguration found but not on Shopify metafield, then we can update the metafield with rewardProductConfiguration values is it exists, because seems the metafield has been changed manually.
+    // can be improvement, can be done later. When rewardProductConfiguration found but not on Shopify metafield, then we can update the metafield with rewardProductConfiguration values is it exists, because seems the metafield has been changed manually.
 
     if (!pointsPrice) {
       console.log('Unexpected error: pointsPrice not found');

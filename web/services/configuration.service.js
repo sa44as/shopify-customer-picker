@@ -177,6 +177,7 @@ const getTransformedConfigurationData = (documents) => {
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
     if (item.shop) doc.shop = item.shop;
     if (item.state) doc.state = item.state;
+    if (item.reward_products) doc.reward_products = item.reward_products; // to do, can be necessary transformedRewardProducts function, not important, can be )
     if (item.default_points) doc.default_points = item.default_points;
     if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
