@@ -43,9 +43,21 @@ const configurationSchema = new Schema(
           required: true,
           default: false,
         },
-        shopify_metafield_id: {
-          type: String,
-          required: true,
+        shopify_metafield: {
+          id: {
+            type: String,
+            required: true,
+          },
+          sell_with_money: {
+            type: Boolean,
+            required: true,
+            default: false,
+          },
+          points_price: {
+            type: Number,
+            required: true,
+            min: configurationValidation.reward_products.points_price.min,
+          }
         },
       }
     ],

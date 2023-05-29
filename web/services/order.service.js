@@ -26,7 +26,7 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
 
     let rewardProductConfiguration = isRewardProductConfigurationFound ? getRewardProductConfiguration[0] : null;
     let pointsPriceFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.points_price : null;
-    let shopifyMetafieldIdFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.metafield.id : null;
+    let shopifyMetafieldIdFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.shopify_metafield.id : null;
 
     let getRewardProductConfigurationFromShopifyProductMetafield = await shopifyApiRest.product.metafield.get(shopifySession, shopifyProductId, shopifyMetafieldIdFromConfiguration);
     // debugger

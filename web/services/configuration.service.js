@@ -33,13 +33,21 @@ console.log('shopifySession: ', shopifySession);
                 shopify_product_id: "7489095598319",
                 points_price: 79.95,
                 sell_with_money: false,
-                shopify_metafield_id: "test", // to do, need to create metafield, and get id for product with above values
+                shopify_metafield: {
+                  id: "test", // to do, need to create metafield, and get id for product with above values
+                  points_price: 79.95,
+                  sell_with_money: false,
+                },
               },
               {
                 shopify_product_id: "632910392",
                 points_price: 100,
                 sell_with_money: true,
-                shopify_metafield_id: "test", // to do, need to create metafield, and get id for product with above values
+                shopify_metafield: {
+                  id: "test", // to do, need to create metafield, and get id for product with above values
+                  points_price: 79.95,
+                  sell_with_money: false,
+                },
               },
             ],
             products_points: [
