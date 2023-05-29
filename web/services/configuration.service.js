@@ -8,7 +8,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
-
+console.log('shopifySession: ', shopifySession);
         // is set for test, but dates functionality can be help later for dates development finalization if something will be necessary to improve or correct.
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
