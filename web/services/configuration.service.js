@@ -156,6 +156,8 @@ const getTransformedConfigurationData = (documents) => {
     isDocumentDataValid = typeof item === 'object' &&
       (
         item.shopify_session__id ||
+        item.shop ||
+        item.state ||
         item.default_points ||
         item.product_points ||
         item.customer_points ||
@@ -173,6 +175,8 @@ const getTransformedConfigurationData = (documents) => {
     transformedDatesPoints = getTransformedDatesPointsData(item.dates_points);
 
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
+    if (item.shop) doc.shop = item.shop;
+    if (item.state) doc.state = item.state;
     if (item.default_points) doc.default_points = item.default_points;
     if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
