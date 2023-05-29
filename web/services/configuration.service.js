@@ -63,6 +63,8 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
           }
         ];
         const response = create(documents);
+        // debugger
+        console.log('configuration creation response: ', response);
         if (response.error) {
           console.log('configuration not created for shop: ', data.fullDocument.shop, ' the reason is: ', response.message);
         } else {
