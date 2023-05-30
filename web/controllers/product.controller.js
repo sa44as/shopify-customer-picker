@@ -15,7 +15,8 @@ const productController = {
 
     const isRewardProduct = Array.isArray(response) && response.length;
     const rewardProductConfiguration = isRewardProduct ? response[0].reward_products.filter((reward_product) => reward_product.shopify_product_id == req.params.shopify_product_id)[0] : null;
-
+    // debugger
+    console.log("response:", response);
     return res.json(
       {
         is_reward_product: isRewardProduct,
