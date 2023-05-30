@@ -5,12 +5,12 @@ const productController = {
     const response = await configurationService.find(
       {
         shopify_session: req.shopifySession._id,
-        "reward_products.shopify_product_id": req.params.shopify_product_id,
+        // "reward_products.shopify_product_id": req.params.shopify_product_id,
       }
     );
       
     // debuggers
-    console.log("req.params.shopify_product_id: ", typeof req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
+    console.log("req.params.shopify_product_id: ", req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
     console.log("isRewardProduct.resposne: ", response);
 
     const isRewardProduct = true; // to do set from response

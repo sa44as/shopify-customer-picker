@@ -233,7 +233,7 @@ const create = async (documents) => {
 
 const find = async (filter, projection, options) => {
   try {
-    const res = await configurationModel.create(filter, projection, options);
+    const res = await configurationModel.find(filter, projection, options);
     return res;
   } catch (err) {
     return {
