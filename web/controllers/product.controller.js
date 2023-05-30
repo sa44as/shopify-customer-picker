@@ -8,6 +8,10 @@ const productController = {
         "reward_products.shopify_product_id": req.params.shopify_product_id,
       }
     );
+      
+    // debuggers
+    console.log("req.params.shopify_product_id: ", req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
+    console.log("isRewardProduct.resposne: ", response);
 
     const isRewardProduct = Array.isArray(response) && response.length;
     const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => reward_product.shopify_product_id == req.params.shopify_product_id) : null;
