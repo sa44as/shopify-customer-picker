@@ -14,11 +14,7 @@ const productController = {
     console.log("isRewardProduct.resposne: ", response, "response.reward_products: ",  response.reward_products);
 
     const isRewardProduct = Array.isArray(response) && response.length;
-    const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => {
-      // debugger
-      console.log("reward_product.shopify_product_id", reward_product.shopify_product_id, "req.params.shopify_product_id: ", req.params.shopify_product_id);
-      return reward_product.shopify_product_id == req.params.shopify_product_id;
-    })[0] : null;
+    const rewardProductConfiguration = isRewardProduct ? response[0].reward_products.filter((reward_product) => reward_product.shopify_product_id == req.params.shopify_product_id)[0] : null;
 
     return res.json(
       {
