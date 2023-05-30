@@ -22,8 +22,8 @@ import { shopify } from "../../index.js";
 const MUTATION = {
   DISCOUNT_AUTOMATIC_APP: {
     CREATE: `
-        mutation discountAutomaticAppCreate($input: DiscountAutomaticAppInput!) {
-          discountAutomaticAppCreate(automaticAppDiscount: $input) {
+        mutation discountAutomaticAppCreate($automaticAppDiscount: DiscountAutomaticAppInput!) {
+          discountAutomaticAppCreate(automaticAppDiscount: $automaticAppDiscount) {
             automaticAppDiscount {
               # DiscountAutomaticApp fields
               title
@@ -49,7 +49,7 @@ const shopifyApiGraphql = {
           data: {
             query: MUTATION.DISCOUNT_AUTOMATIC_APP.CREATE,
             variables: {
-              input: {
+              automaticAppDiscount: {
                 title: input.title,
                 functionId: input.functionId,
                 startsAt: input.startsAt,
