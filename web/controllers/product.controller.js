@@ -10,7 +10,7 @@ const productController = {
     );
       
     // debuggers
-    console.log("req.params.shopify_product_id: ", typeof req.params.shopify_product_, "req.shopifySession._id: ", req.shopifySession._id);
+    console.log("req.params.shopify_product_id: ", typeof req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
     console.log("isRewardProduct.resposne: ", response);
 
     const isRewardProduct = true; // to do set from response
