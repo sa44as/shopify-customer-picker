@@ -1,5 +1,5 @@
 import { configurationModel, shopifySessionModel } from "../models/map.js";
-import { shopifyApiRest } from "./map.js";
+import { shopifyApiRest, shopifyApiGraphql } from "./map.js";
 
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
@@ -78,6 +78,15 @@ console.log('shopifySession: ', shopifySession);
         } else {
           console.log('configuration created successfully for shop: ', data.fullDocument.shop);
         }
+
+        const input = {
+          title: "Loyalty program discount",
+          functionId: process.env.SHOPIFY_PRODUCT_DISCOUNT_ID, // "01H0N8X28PSAV5AHNDFHSFF3DN",
+          startsAt: currentDate, // "2023-05-22T00:00:00",
+        };
+
+        const discountAutomaticAppCreateResponse = await shopifyApiGraphql.discountAutomaticApp.create(shopifySession, input);
+        console.log("discountAutomaticAppCreateResposne: ", discountAutomaticAppCreateResponse);
         break;
     }
   });
@@ -185,7 +194,7 @@ const getTransformedConfigurationData = (documents) => {
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
     if (item.shop) doc.shop = item.shop;
     if (item.state) doc.state = item.state;
-    if (item.reward_products) doc.reward_products = item.reward_products; // to do, can be necessary transformedRewardProducts function, not important, can be )
+    if (item.reward_products) doc.reward_products = item.reward_products; // to do, it is necessary transformedRewardProducts function, also need to create product metafield and attach metafield id and other fields if necessary to reward_product.shopify_metafield
     if (item.default_points) doc.default_points = item.default_points;
     if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
