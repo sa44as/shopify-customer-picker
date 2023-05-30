@@ -84,6 +84,8 @@ console.log('shopifySession: ', shopifySession);
           functionId: process.env.SHOPIFY_PRODUCT_DISCOUNT_ID, // "01H0N8X28PSAV5AHNDFHSFF3DN",
           startsAt: currentDate, // "2023-05-22T00:00:00",
         };
+        // debugger
+        console.log('input:', input);
 
         const discountAutomaticAppCreateResponse = await shopifyApiGraphql.discountAutomaticApp.create(shopifySession, input);
         console.log("discountAutomaticAppCreateResposne: ", discountAutomaticAppCreateResponse);
