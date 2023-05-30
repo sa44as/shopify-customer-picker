@@ -21,11 +21,11 @@ const customerController = {
       ]
     );
 
-    console.log("getPointsBalance.resposne: ", response);
+    const pointsBalance = response?.points_balance?.[0]?.points_balance;
 
     return res.json(
       {
-        points_balance: response,
+        points_balance: pointsBalance,
       }
     ).status(200);
   },

@@ -9,7 +9,7 @@ import { shopify, shopifySessionService, configurationService } from "./services
 import productCreator from "./product-creator.js";
 import { GDPRWebhookHandlers, OrdersWebhookHandlers } from "./services/shopify.service/webhookHandlers/map.js";
 import { mongoConnect } from "./config/map.js";
-import { orderRoutes, customerRoutes } from "./routes/map.js";
+import { orderRoutes, customerRoutes, productRoutes } from "./routes/map.js";
 
 const mongoConnection = await mongoConnect();
 configurationService.watchNewShopExistenceAndSetupConfiguration();
@@ -73,6 +73,7 @@ app.use(express.json());
 app.use('/api/external/*', cors(corsOptions));
 app.use('/api/external/v1/order', orderRoutes());
 app.use('/api/external/v1/customer', customerRoutes());
+app.use('/api/external/v1/product', productRoutes());
 
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/frontend/vite.config.js
