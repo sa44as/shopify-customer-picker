@@ -57,15 +57,16 @@ const shopifyApiGraphql = {
             },
           },
         });
+        return response;
       } catch (err) {
         console.log("shopifyApiGraphql.discountAutomaticApp.create.err: ", err);
         // the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
-        if (error instanceof GraphqlQueryError) {
+        if (err instanceof GraphqlQueryError) {
           throw new Error(
-            `${error.message}\n${JSON.stringify(error.response, null, 2)}`
+            `${err.message}\n${JSON.stringify(err.response, null, 2)}`
           );
         } else {
-          throw error;
+          throw err;
         }
         // end of the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
         // return null; // uncomment when above error reporting is commented
