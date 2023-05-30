@@ -1,2 +1,2 @@
-export { orderController } from "./order.contoller.js";
-export { customerController } from "./customer.contoller.js";
+export { orderController } from "./order.controller.js";
+export { customerController } from "./customer.controller.js";
