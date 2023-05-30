@@ -88,7 +88,8 @@ console.log('shopifySession: ', shopifySession);
         console.log('input:', input);
 
         const discountAutomaticAppCreateResponse = await shopifyApiGraphql.discountAutomaticApp.create(shopifySession, input);
-        console.log("discountAutomaticAppCreateResposne: ", discountAutomaticAppCreateResponse);
+        // debugger
+        // console.log("discountAutomaticAppCreateResposne: ", discountAutomaticAppCreateResponse);
         break;
     }
   });

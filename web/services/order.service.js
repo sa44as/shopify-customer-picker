@@ -222,9 +222,22 @@ const find = async (filter, projection, options) => {
   }
 }
 
+const aggregate = async (pipeline) => {
+  try {
+    const res = await orderModel.aggregate(pipeline);
+    return res;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while aggregate Order. Original err.message: ' + err.message,
+    };
+  }
+}
+
 const orderService = {
   create,
   find,
+  aggregate,
 }
 
 export { orderService }
