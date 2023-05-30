@@ -13,7 +13,7 @@ const productController = {
     console.log("req.params.shopify_product_id: ", req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
     console.log("isRewardProduct.resposne: ", response);
 
-    const isRewardProduct = Array.isArray(response) && response.length && response.reward_products;
+    const isRewardProduct = Array.isArray(response) && response.length;
     const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => {
       // debugger
       console.log("reward_product.shopify_product_id", reward_product.shopify_product_id, "req.params.shopify_product_id: ", req.params.shopify_product_id);
