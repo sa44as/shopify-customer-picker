@@ -25,10 +25,7 @@ const MUTATION = {
         mutation discountAutomaticAppCreate($automaticAppDiscount: DiscountAutomaticAppInput!) {
           discountAutomaticAppCreate(automaticAppDiscount: $automaticAppDiscount) {
             automaticAppDiscount {
-              # DiscountAutomaticApp fields
-              title
-              functionId
-              startsAt
+              discountId
             }
             userErrors {
               field

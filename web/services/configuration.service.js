@@ -82,7 +82,7 @@ console.log('shopifySession: ', shopifySession);
         const input = {
           title: "Loyalty program discount",
           functionId: process.env.SHOPIFY_PRODUCT_DISCOUNT_ID, // "01H0N8X28PSAV5AHNDFHSFF3DN",
-          startsAt: "2023-05-22T00:00:00", //currentDate,
+          startsAt: currentDate, // "2023-05-22T00:00:00",
         };
         // debugger
         console.log('input:', input);
