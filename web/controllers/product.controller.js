@@ -11,7 +11,7 @@ const productController = {
       
     // debuggers
     console.log("req.params.shopify_product_id: ", req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
-    console.log("isRewardProduct.resposne: ", response);
+    console.log("isRewardProduct.resposne: ", response, "response.reward_products: ",  response.reward_products);
 
     const isRewardProduct = Array.isArray(response) && response.length;
     const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => {
