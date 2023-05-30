@@ -5,7 +5,7 @@ const productController = {
     const response = await configurationService.find(
       {
         shopify_session: req.shopifySession._id,
-        "reward_products.shopify_product_id": String(req.params.shopify_product_id),
+        // "reward_products.shopify_product_id": req.params.shopify_product_id,
       }
     );
       
