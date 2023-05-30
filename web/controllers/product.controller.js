@@ -5,20 +5,15 @@ const productController = {
     const response = await configurationService.find(
       {
         shopify_session: req.shopifySession._id,
-        // "reward_products.shopify_product_id": req.params.shopify_product_id,
+        "reward_products.shopify_product_id": req.params.shopify_product_id,
       }
     );
-      
-    // debuggers
-    console.log("req.params.shopify_product_id: ", req.params.shopify_product_id, "req.shopifySession._id: ", req.shopifySession._id);
-    console.log("isRewardProduct.resposne: ", response);
 
-    const isRewardProduct = true; // to do set from response
-    const rewardProductConfiguration = {}; // to do set from response
+    const isRewardProduct = Array.isArray(response) && response.length;
+    const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => reward_product.shopify_product_id == req.params.shopify_product_id) : null;
 
     return res.json(
       {
-        response: response,
         is_reward_product: isRewardProduct,
         reward_product_configuration: rewardProductConfiguration,
       }
