@@ -36,15 +36,18 @@ export default /**
     }
 
     let usedRewardPoints = 0;
-    let isProductVariant, getProductConfigurations, productConfigurations, pointsPrice, eligibleQuantity, isEligible, isStillEligible, isAllQuantityEligible, buyWith;
+    let isProductVariant, getProductConfigurations, productConfigurations, pointsPrice, eligibleQuantity, isEligible, isStillEligible, isAllQuantityEligible/*, buyWith*/;
     // lines quantity remainders, can be used later
     // const splitedLines = [];
     const targets = input.cart.lines
       // Use the configured quantity instead of a hardcoded value
       .filter(line => {
-        buyWith = line?.attribute?.value ?? null;
-        if (buyWith != 'points')
-          return false;
+        // For product that can be sell also with money, can be used later once cart APIs will be have more abilities
+        // buyWith = line?.attribute?.value ?? null;
+        // if (buyWith != 'points')
+        //   return false;
+        // debugger
+        // console.log("buyWith: ", buyWith);
         isProductVariant = line.merchandise.__typename == "ProductVariant";
         if (!isProductVariant)
           return false;
