@@ -1,6 +1,6 @@
 import { Page } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
-import { RewardOroductForm } from "../../components";
+import { RewardProductForm } from "../../components";
 
 export default function ManageRewardProduct() {
   const breadcrumbs = [{ content: "Reward products", url: "/" }];
