@@ -27,33 +27,48 @@ import { ImageMajor, AlertMinor } from "@shopify/polaris-icons";
 import { useAuthenticatedFetch, useAppQuery } from "../hooks";
 
 /* Import custom hooks for forms */
-import { useForm, useField, notEmptyString } from "@shopify/react-form";
+import { useForm, useField, notEmptyString, positiveIntegerString } from "@shopify/react-form";
 
-const NO_DISCOUNT_OPTION = { label: "No discount", value: "" };
-
-/*
-  The discount codes available in the store.
-
-  This variable will only have a value after retrieving discount codes from the API.
-*/
-const DISCOUNT_CODES = {};
-
-export function RewardProductForm({ QRCode: InitialQRCode }) {
-  const [QRCode, setQRCode] = useState(InitialQRCode);
+export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
+  const [rewardProduct, setRewardProduct] = useState(InitialRewardProduct);
   const [showResourcePicker, setShowResourcePicker] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(QRCode?.product);
+  const [selectedProduct, setSelectedProduct] = useState(/*rewardProduct?.shopify_product_id*/ null);
   const navigate = useNavigate();
   const appBridge = useAppBridge();
   const fetch = useAuthenticatedFetch();
-  const deletedProduct = QRCode?.product?.title === "Deleted product";
 
-
-  /*
-    This is a placeholder function that is triggered when the user hits the "Save" button.
-
-    It will be replaced by a different function when the frontend is connected to the backend.
-  */
-  const onSubmit = (body) => console.log("submit", body);
+  const onSubmit = useCallback(
+    (body) => {
+      (async () => {
+        const parsedBody = body;
+        console.log("parsedBody: ", parsedBody);
+        const rewardProductId = rewardProduct?.shopify_product_id;
+        /* construct the appropriate URL to send the API request to based on whether the QR code is new or being updated */
+        const url = rewardProductId ? `/api/internal/v1/configuration/reward_product/${rewardProductId}` : "/api/internal/v1/configuration/reward_product";
+        /* a condition to select the appropriate HTTP method: PATCH to update a Reward product or POST to create a new Reward product */
+        const method = rewardProductId ? "PATCH" : "POST";
+        /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
+        const response = await fetch(url, {
+          method,
+          body: JSON.stringify(parsedBody),
+          headers: { "Content-Type": "application/json" },
+        });
+        if (response.ok) {
+          makeClean();
+          const rewardProduct = await response.json();
+          /* if this is a new Reward product, then save the Reward product and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
+          if (!rewardProductId) {
+            navigate(`/reward_products/${rewardProduct.id}`);
+            /* if this is a Reward product update, update the Reward product state in this component */
+          } else {
+            setRewardProduct(rewardProduct);
+          }
+        }
+      })();
+      return { status: "success" };
+    },
+    [rewardProduct, setRewardProduct]
+  );
 
 
   /*
@@ -67,43 +82,26 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
   */
   const {
     fields: {
-      title,
-      productId,
-      variantId,
-      handle,
-      discountId,
-      discountCode,
-      destination,
+      shopifyProductId,
+      pointsPrice,
     },
     dirty,
     reset,
     submitting,
     submit,
-    makeClean,
   } = useForm({
     fields: {
-      title: useField({
-        value: QRCode?.title || "",
-        validates: [notEmptyString("Please name your QR code")],
-      }),
-      productId: useField({
-        value: deletedProduct ? "Deleted product" : QRCode?.product?.id || "",
+      shopifyProductId: useField({
+        value: rewardProduct?.shopify_product_id || "",
         validates: [notEmptyString("Please select a product")],
       }),
-      variantId: useField(QRCode?.variantId || ""),
-      handle: useField(QRCode?.handle || ""),
-      destination: useField(
-        QRCode?.destination ? [QRCode.destination] : ["product"]
-      ),
-      discountId: useField(QRCode?.discountId || NO_DISCOUNT_OPTION.value),
-      discountCode: useField(QRCode?.discountCode || ""),
+      pointsPrice: useField({
+        value: rewardProduct?.points_price || "",
+        validates: [notEmptyString("Please give points price your Reward product"), positiveIntegerString("The points price can't accept the negative value")],
+      }),
     },
     onSubmit,
   });
-
-  const QRCodeURL = QRCode
-    ? new URL(`/qrcodes/${QRCode.id}/image`, location.toString()).toString()
-    : null;
 
   /*
     This function is called with the selected product whenever the user clicks "Add" in the ResourcePicker.
@@ -120,19 +118,8 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
       images: selection[0].images,
       handle: selection[0].handle,
     });
-    productId.onChange(selection[0].id);
-    variantId.onChange(selection[0].variants[0].id);
-    handle.onChange(selection[0].handle);
+    shopifyProductId.onChange(selection[0].id);
     setShowResourcePicker(false);
-  }, []);
-
-
-  /*
-    This function updates the form state whenever a user selects a new discount option.
-  */
-  const handleDiscountChange = useCallback((id) => {
-    discountId.onChange(id);
-    discountCode.onChange(DISCOUNT_CODES[id] || "");
   }, []);
 
 
@@ -146,47 +133,20 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
     [showResourcePicker]
   );
 
-  /*
-    This is a placeholder function that is triggered when the user hits the "Delete" button.
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteRewardProduct = useCallback(async () => {
+    reset();
+    /* The isDeleting state disables the delete Reward product button to show the user that an action is in progress */
+    setIsDeleting(true);
+    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
 
-    It will be replaced by a different function when the frontend is connected to the backend.
-  */
-  const isDeleting = false;
-  const deleteQRCode = () => console.log("delete");
-
-
-  /*
-    This function runs when a user clicks the "Go to destination" button.
-
-    It uses data from the App Bridge context as well as form state to construct destination URLs using the URL helpers you created.
-  */
-  const goToDestination = useCallback(() => {
-    if (!selectedProduct) return;
-    const data = {
-      host: appBridge.hostOrigin,
-      productHandle: handle.value || selectedProduct.handle,
-      discountCode: discountCode.value || undefined,
-      variantId: variantId.value,
-    };
-
-    const targetURL =
-      deletedProduct || destination.value[0] === "product"
-        ? productViewURL(data)
-        : productCheckoutURL(data);
-
-    window.open(targetURL, "_blank", "noreferrer,noopener");
-  }, [QRCode, selectedProduct, destination, discountCode, handle, variantId]);
-
-
-  /*
-    This array is used in a select field in the form to manage discount options.
-
-    It will be extended when the frontend is connected to the backend and the array is populated with discount data from the store.
-
-    For now, it contains only the default value.
-  */
-  const isLoadingDiscounts = true;
-  const discountOptions = [NO_DISCOUNT_OPTION];
+    if (response.ok) {
+      navigate(`/`);
+    }
+  }, [rewardProduct]);
 
 
   /*
@@ -200,17 +160,6 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
   /* The form layout, created using Polaris and App Bridge components. */
   return (
     <Stack vertical>
-      {deletedProduct && (
-        <Banner
-          title="The product for this QR code no longer exists."
-          status="critical"
-        >
-          <p>
-            Scans will be directed to a 404 page, or you can choose another
-            product for this QR code.
-          </p>
-        </Banner>
-      )}
       <Layout>
         <Layout.Section>
           <Form>
@@ -231,20 +180,11 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
               fullWidth
             />
             <FormLayout>
-              <Card sectioned title="Title">
-                <TextField
-                  {...title}
-                  label="Title"
-                  labelHidden
-                  helpText="Only store staff can see this title"
-                />
-              </Card>
-
               <Card
                 title="Product"
                 actions={[
                   {
-                    content: productId.value
+                    content: shopifyProductId.value
                       ? "Change product"
                       : "Select product",
                     onAction: toggleResourcePicker,
@@ -262,7 +202,7 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
                       open
                     />
                   )}
-                  {productId.value ? (
+                  {shopifyProductId.value ? (
                     <Stack alignment="center">
                       {imageSrc || originalImageSrc ? (
                         <Thumbnail
@@ -285,102 +225,39 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
                       <Button onClick={toggleResourcePicker}>
                         Select product
                       </Button>
-                      {productId.error && (
+                      {shopifyProductId.error && (
                         <Stack spacing="tight">
                           <Icon source={AlertMinor} color="critical" />
                           <TextStyle variation="negative">
-                            {productId.error}
+                            {shopifyProductId.error}
                           </TextStyle>
                         </Stack>
                       )}
                     </Stack>
                   )}
                 </Card.Section>
-                <Card.Section title="Scan Destination">
-                  <ChoiceList
-                    title="Scan destination"
-                    titleHidden
-                    choices={[
-                      { label: "Link to product page", value: "product" },
-                      {
-                        label: "Link to checkout page with product in the cart",
-                        value: "checkout",
-                      },
-                    ]}
-                    selected={destination.value}
-                    onChange={destination.onChange}
-                  />
-                </Card.Section>
               </Card>
-              <Card
-                sectioned
-                title="Discount"
-                actions={[
-                  {
-                    content: "Create discount",
-                    onAction: () =>
-                      navigate(
-                        {
-                          name: "Discount",
-                          resource: {
-                            create: true,
-                          },
-                        },
-                        { target: "new" }
-                      ),
-                  },
-                ]}
-              >
-                <Select
-                  label="discount code"
-                  options={discountOptions}
-                  onChange={handleDiscountChange}
-                  value={discountId.value}
-                  disabled={isLoadingDiscounts || discountsError}
+              <Card sectioned title="Points price">
+                <TextField
+                  {...pointsPrice}
+                  type="number"
+                  label="Points price"
                   labelHidden
+                  helpText="Give points price your reward product"
                 />
               </Card>
             </FormLayout>
           </Form>
         </Layout.Section>
-        <Layout.Section secondary>
-          <Card sectioned title="QR code">
-            {QRCode ? (
-              <EmptyState imageContained={true} image={QRCodeURL} />
-            ) : (
-              <EmptyState>
-                <p>Your QR code will appear here after you save.</p>
-              </EmptyState>
-            )}
-            <Stack vertical>
-              <Button
-                fullWidth
-                primary
-                download
-                url={QRCodeURL}
-                disabled={!QRCode || isDeleting}
-              >
-                Download
-              </Button>
-              <Button
-                fullWidth
-                onClick={goToDestination}
-                disabled={!selectedProduct}
-              >
-                Go to destination
-              </Button>
-            </Stack>
-          </Card>
-        </Layout.Section>
         <Layout.Section>
-          {QRCode?.id && (
+          {rewardProduct?.id && (
             <Button
               outline
               destructive
-              onClick={deleteQRCode}
+              onClick={deleteRewardProduct}
               loading={isDeleting}
             >
-              Delete QR code
+              Delete Reward product
             </Button>
           )}
         </Layout.Section>
@@ -389,38 +266,3 @@ export function RewardProductForm({ QRCode: InitialQRCode }) {
   );
 }
 
-/* Builds a URL to the selected product */
-function productViewURL({ host, productHandle, discountCode }) {
-  const url = new URL(host);
-  const productPath = `/products/${productHandle}`;
-
-  /*
-    If a discount is selected, then build a URL to the selected discount that redirects to the selected product: /discount/{code}?redirect=/products/{product}
-  */
-  if (discountCode) {
-    url.pathname = `/discount/${discountCode}`;
-    url.searchParams.append("redirect", productPath);
-  } else {
-    url.pathname = productPath;
-  }
-
-  return url.toString();
-}
-
-/* Builds a URL to a checkout that contains the selected product */
-function productCheckoutURL({ host, variantId, quantity = 1, discountCode }) {
-  const url = new URL(host);
-  const id = variantId.replace(
-    /gid:\/\/shopify\/ProductVariant\/([0-9]+)/,
-    "$1"
-  );
-
-  url.pathname = `/cart/${id}:${quantity}`;
-
-  /* Builds a URL to a checkout that contains the selected product with a discount code applied */
-  if (discountCode) {
-    url.searchParams.append("discount", discountCode);
-  }
-
-  return url.toString();
-}

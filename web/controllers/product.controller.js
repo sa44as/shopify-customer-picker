@@ -19,6 +19,7 @@ const productController = {
       }
     ).status(200);
   },
+  
 }
 
 export { productController }

@@ -81,8 +81,8 @@ console.log('shopifySession: ', shopifySession);
 
         const input = {
           title: "Loyalty program discount",
-          functionId: process.env.SHOPIFY_PRODUCT_DISCOUNT_ID, // "01H0N8X28PSAV5AHNDFHSFF3DN",
-          startsAt: currentDate, // "2023-05-22T00:00:00",
+          functionId: process.env.SHOPIFY_PRODUCT_DISCOUNT_ID, // should be in this format "01H0N8X28PSAV5AHNDFHSFF3DN",
+          startsAt: currentDate, // should be in this format "2023-05-22T00:00:00",
         };
         // debugger
         console.log('input:', input);
@@ -288,11 +288,54 @@ const update = async ({ shopify_session__id, default_points, products_points, cu
   }
 }
 
+const getTransformedRewardProductData = async (shopify_session, rewardProduct) => {
+  const isRewardProductDataValid = rewardProduct && typeof rewardProduct === 'object' && rewardProduct.shopify_product_id && rewardProduct.points_price;
+  if (!isRewardProductDataValid) return null;
+
+  const metafieldValue = {
+    points_price: rewardProduct.points_price,
+  };
+  const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
+
+  const transformedRewardProduct = {
+    shopify_product_id: rewardProduct.shopify_product_id,
+    points_price: rewardProduct.points_price,
+    shopify_metafield: shopifyMetafield,
+  };
+
+  return transformedRewardProduct;
+}
+
+const createRewardProduct = async ({shopify_session, reward_product}) => {
+  const transformedRewardProductData = await getTransformedRewardProductData(shopify_session, reward_product);
+  // debugger
+  console.log("transformedRewardProductData: ", transformedRewardProductData);
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $push: {
+          reward_products: transformedRewardProductData,
+        }
+      }
+    );
+    return response;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while creating Reward product Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
 const configurationService = {
   watchNewShopExistenceAndSetupConfiguration,
   create,
   find,
   update,
+  createRewardProduct,
 }
 
 export { configurationService }

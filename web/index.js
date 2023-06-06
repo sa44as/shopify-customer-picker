@@ -6,10 +6,9 @@ import cors from "cors";
 import serveStatic from "serve-static";
 
 import { shopify, shopifySessionService, configurationService } from "./services/map.js";
-import productCreator from "./product-creator.js";
 import { GDPRWebhookHandlers, OrdersWebhookHandlers } from "./services/shopify.service/webhookHandlers/map.js";
 import { mongoConnect } from "./config/map.js";
-import { orderRoutes, customerRoutes, productRoutes } from "./routes/map.js";
+import { orderRoutes, customerRoutes, configurationInternalRoutes, configurationExternalRoutes } from "./routes/map.js";
 
 const mongoConnection = await mongoConnect();
 configurationService.watchNewShopExistenceAndSetupConfiguration();
@@ -73,33 +72,12 @@ app.use(express.json());
 app.use('/api/external/*', cors(corsOptions));
 app.use('/api/external/v1/order', orderRoutes());
 app.use('/api/external/v1/customer', customerRoutes());
-app.use('/api/external/v1/product', productRoutes());
+app.use('/api/external/v1/configuration', configurationExternalRoutes());
 
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/frontend/vite.config.js
-app.use("/api/internal/*", shopify.validateAuthenticatedSession()); // to do, commented out temporary for test api
-
-app.get("/api/internal/products/count", async (_req, res) => {
-  console.log('res.locals.shopify.session: ', res.locals.shopify.session);
-  // const countData = await shopify.api.rest.Product.count({
-  //   session: res.locals.shopify.session,
-  // });
-  res.status(200).send('countData');
-});
-
-app.get("/api/internal/products/create", async (_req, res) => {
-  let status = 200;
-  let error = null;
-
-  try {
-    await productCreator(res.locals.shopify.session);
-  } catch (e) {
-    console.log(`Failed to process products/create: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.status(status).send({ success: status === 200, error });
-});
+app.use("/api/internal/*", shopify.validateAuthenticatedSession());
+app.use('/api/internal/v1/configuration', configurationInternalRoutes());
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 

@@ -29,14 +29,14 @@ export function RewardProductsIndex({ rewardProducts, loading }) {
         >
           <IndexTable.Cell>
             <Thumbnail
-              source={shopify_product_image_url || ImageMajor}
+              source={null || ImageMajor}
               alt="placeholder"
               color="base"
               size="small"
             />
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <UnstyledLink data-primary-link url={`/rewardproducts/${shopify_product_id}`}>
+            <UnstyledLink data-primary-link url={`/reward_products/${shopify_product_id}`}>
               {truncate(shopify_product_title, 25)}
             </UnstyledLink>
           </IndexTable.Cell>
@@ -48,10 +48,10 @@ export function RewardProductsIndex({ rewardProducts, loading }) {
 
   /* A layout for small screens, built using Polaris components */
   return (
-    <Card>
+    <Card>      
       <IndexTable
         resourceName={resourceName}
-        itemCount={QRCodes.length}
+        itemCount={rewardProducts.length}
         headings={[
           { title: "Thumbnail", hidden: true },
           { title: "Title" },

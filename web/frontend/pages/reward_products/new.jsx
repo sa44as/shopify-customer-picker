@@ -12,7 +12,7 @@ export default function ManageRewardProduct() {
         breadcrumbs={breadcrumbs}
         primaryAction={null}
       />
-      <RewardOroductForm />
+      <RewardProductForm />
     </Page>
   );
 }

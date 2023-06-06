@@ -20,17 +20,19 @@ const shopifyApiRest = {
       create: async (session, productId, namespace, key, value, type) => {
         try {
           const metafield = new shopify.api.rest.Metafield({session});
-          metafield.product_id = productId;
-          metafield.namespace = namespace; //"loyalty_program";
-          metafield.key = key; //"configuration";
+          metafield.product_id = productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
+          metafield.namespace = namespace;
+          metafield.key = key;
           metafield.value = type === "json" ? JSON.stringify(value) : value;
-          metafield.type = type; //"json";
-          const response = await metafield.save(
+          metafield.type = type;
+          // debugger
+          console.log("metafield: ", metafield);
+          await metafield.save(
             {
               update: true,
             }
           );
-          return response;
+          return metafield;
         } catch (err) {
           console.log("shopifyApiRest.product.metafield.create.err: ", err);
           return null;

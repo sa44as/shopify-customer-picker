@@ -7,6 +7,7 @@ import {
   SkeletonBodyText,
 } from "@shopify/polaris";
 import { RewardProductsIndex } from "../components";
+import { useAppQuery } from "../hooks";
 
 export default function HomePage() {
   /*
@@ -16,19 +17,21 @@ export default function HomePage() {
   */
   const navigate = useNavigate();
 
-  /*
-    These are mock values. Setting these values lets you preview the loading markup and the empty state.
-  */
-  const isLoading = false;
-  const isRefetching = false;
-  const rewardProducts = [
-    {
-      shopify_product_id: "test_product_id",
-      shopify_product_image_url: 'test_url',
-      shopify_product_title: "test ptoduct title",
-      points_price: "79.95",
-    },
-  ];
+  /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
+  const {
+    data: rewardProducts,
+    isLoading,
+
+    /*
+      react-query provides stale-while-revalidate caching.
+      By passing isRefetching to Index Tables we can show stale data and a loading state.
+      Once the query refetches, IndexTable updates and the loading state is removed.
+      This ensures a performant UX.
+    */
+    isRefetching,
+  } = useAppQuery({
+    url: "/api/internal/v1/configuration/reward_products",
+  });
 
   /* Set the QR codes to use in the list */
   const rewardProductsMarkup = rewardProducts?.length ? (
@@ -57,7 +60,7 @@ export default function HomePage() {
           image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
         >
           <p>
-            Make product reward and setup points price.
+            Make the reward product and setup points price.
           </p>
         </EmptyState>
       </Card>
@@ -78,7 +81,6 @@ export default function HomePage() {
       />
       <Layout>
         <Layout.Section>
-          <p>here</p>
           {loadingMarkup}
           {rewardProductsMarkup}
           {emptyStateMarkup}
