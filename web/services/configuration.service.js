@@ -307,8 +307,9 @@ const getTransformedRewardProductData = async (shopify_session, rewardProduct, i
   if (isUpdate) {
     // to do, need to update shopify metafield
   } else {
-    const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
   }
+  // to do move up
+  const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
 
   const transformedRewardProduct = {
     shopify_product_id: rewardProduct.shopify_product_id,
