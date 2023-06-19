@@ -32,7 +32,7 @@ import { useForm, useField, notEmptyString, positiveIntegerString } from "@shopi
 export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
   const [rewardProduct, setRewardProduct] = useState(InitialRewardProduct);
   const [showResourcePicker, setShowResourcePicker] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(/*rewardProduct?.shopify_product_id*/ null);
+  const [selectedProduct, setSelectedProduct] = useState(rewardProduct);
   const navigate = useNavigate();
   const appBridge = useAppBridge();
   const fetch = useAuthenticatedFetch();
@@ -41,8 +41,9 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     (body) => {
       (async () => {
         const parsedBody = body;
+        // debugger
         console.log("parsedBody: ", parsedBody);
-        const rewardProductId = rewardProduct?.shopify_product_id;
+        const rewardProductId = rewardProduct && rewardProduct.shopify_product_id.includes("gid://") ? rewardProduct.shopify_product_id.split("/").length && rewardProduct.shopify_product_id.split("/")[rewardProduct.shopify_product_id.split("/").length - 1] : rewardProduct?.shopify_product_id;
         /* construct the appropriate URL to send the API request to based on whether the QR code is new or being updated */
         const url = rewardProductId ? `/api/internal/v1/configuration/reward_product/${rewardProductId}` : "/api/internal/v1/configuration/reward_product";
         /* a condition to select the appropriate HTTP method: PATCH to update a Reward product or POST to create a new Reward product */
@@ -53,15 +54,23 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
           body: JSON.stringify(parsedBody),
           headers: { "Content-Type": "application/json" },
         });
+
         if (response.ok) {
           makeClean();
-          const rewardProduct = await response.json();
+          const getRewardProduct = await response.json();
+          const productId = getRewardProduct.reward_product.shopify_product_id.includes("gid://") ? getRewardProduct.reward_product.shopify_product_id.split("/").length && getRewardProduct.reward_product.shopify_product_id.split("/")[getRewardProduct.reward_product.shopify_product_id.split("/").length - 1] : getRewardProduct.reward_product.shopify_product_id;
           /* if this is a new Reward product, then save the Reward product and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
           if (!rewardProductId) {
-            navigate(`/reward_products/${rewardProduct.id}`);
+            navigate(`/reward_products/${productId}`);
             /* if this is a Reward product update, update the Reward product state in this component */
           } else {
-            setRewardProduct(rewardProduct);
+            setRewardProduct(getRewardProduct.reward_product);
+          }
+        } else if (response.status === 409) {
+          makeClean();
+          const errResponse = await response.json();
+          if (errResponse?.error?.message) {
+            alert(errResponse.error.message);
           }
         }
       })();
@@ -84,11 +93,14 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     fields: {
       shopifyProductId,
       pointsPrice,
+      shopifyProductTitle,
+      shopifyProductImageUrl,
     },
     dirty,
     reset,
     submitting,
     submit,
+    makeClean,
   } = useForm({
     fields: {
       shopifyProductId: useField({
@@ -98,6 +110,12 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
       pointsPrice: useField({
         value: rewardProduct?.points_price || "",
         validates: [notEmptyString("Please give points price your Reward product"), positiveIntegerString("The points price can't accept the negative value")],
+      }),
+      shopifyProductTitle: useField({
+        value: rewardProduct?.shopify_product_title || "",
+      }),
+      shopifyProductImageUrl: useField({
+        value: rewardProduct?.shopify_product_image_url || "",
       }),
     },
     onSubmit,
@@ -113,12 +131,16 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     Finally, closes the ResourcePicker.
   */
   const handleProductChange = useCallback(({ selection }) => {
+    const imageSrc = selection[0]?.images?.edges?.[0]?.node?.url;
+    const originalImageSrc = selection[0]?.images?.[0]?.originalSrc;
     setSelectedProduct({
-      title: selection[0].title,
-      images: selection[0].images,
-      handle: selection[0].handle,
+      shopify_product_title: selection[0].title,
+      shopify_product_image_url: imageSrc || originalImageSrc,
+      // handle: selection[0].handle, // still do not necessary
     });
     shopifyProductId.onChange(selection[0].id);
+    shopifyProductTitle.onChange(selection[0].title);
+    shopifyProductImageUrl.onChange(imageSrc || originalImageSrc);
     setShowResourcePicker(false);
   }, []);
 
@@ -138,7 +160,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     reset();
     /* The isDeleting state disables the delete Reward product button to show the user that an action is in progress */
     setIsDeleting(true);
-    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.id}`, {
+    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.shopify_product_id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
@@ -152,10 +174,8 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
   /*
     These variables are used to display product images, and will be populated when image URLs can be retrieved from the Admin.
   */
-  const imageSrc = selectedProduct?.images?.edges?.[0]?.node?.url;
-  const originalImageSrc = selectedProduct?.images?.[0]?.originalSrc;
-  const altText =
-    selectedProduct?.images?.[0]?.altText || selectedProduct?.title;
+  const imageSrc = selectedProduct?.shopify_product_image_url;
+  const altText = selectedProduct?.shopify_product_title;
 
   /* The form layout, created using Polaris and App Bridge components. */
   return (
@@ -182,14 +202,17 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
             <FormLayout>
               <Card
                 title="Product"
-                actions={[
-                  {
-                    content: shopifyProductId.value
-                      ? "Change product"
-                      : "Select product",
-                    onAction: toggleResourcePicker,
-                  },
-                ]}
+                actions={
+                  rewardProduct?.shopify_product_id ? null :
+                  [
+                    {
+                      content: shopifyProductId.value
+                        ? "Change product"
+                        : "Select product",
+                      onAction: toggleResourcePicker,
+                    },
+                  ]
+                }
               >
                 <Card.Section>
                   {showResourcePicker && (
@@ -204,9 +227,9 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
                   )}
                   {shopifyProductId.value ? (
                     <Stack alignment="center">
-                      {imageSrc || originalImageSrc ? (
+                      {imageSrc ? (
                         <Thumbnail
-                          source={imageSrc || originalImageSrc}
+                          source={imageSrc}
                           alt={altText}
                         />
                       ) : (
@@ -217,7 +240,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
                         />
                       )}
                       <TextStyle variation="strong">
-                        {selectedProduct.title}
+                        {selectedProduct?.shopify_product_title}
                       </TextStyle>
                     </Stack>
                   ) : (
@@ -250,7 +273,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
           </Form>
         </Layout.Section>
         <Layout.Section>
-          {rewardProduct?.id && (
+          {rewardProduct?.shopify_product_id && (
             <Button
               outline
               destructive

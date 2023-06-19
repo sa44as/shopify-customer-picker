@@ -19,7 +19,7 @@ export default function HomePage() {
 
   /* useAppQuery wraps react-query and the App Bridge authenticatedFetch function */
   const {
-    data: rewardProducts,
+    data: getRewardProducts,
     isLoading,
 
     /*
@@ -34,8 +34,8 @@ export default function HomePage() {
   });
 
   /* Set the QR codes to use in the list */
-  const rewardProductsMarkup = rewardProducts?.length ? (
-    <RewardProductsIndex rewardProducts={rewardProducts} loading={isRefetching} />
+  const rewardProductsMarkup = getRewardProducts?.reward_products?.length ? (
+    <RewardProductsIndex rewardProducts={getRewardProducts.reward_products} loading={isRefetching} />
   ) : null;
 
   /* loadingMarkup uses the loading component from AppBridge and components from Polaris  */
@@ -48,7 +48,7 @@ export default function HomePage() {
 
   /* Use Polaris Card and EmptyState components to define the contents of the empty state */
   const emptyStateMarkup =
-    !isLoading && !rewardProducts?.length ? (
+    !isLoading && !getRewardProducts?.reward_products?.length ? (
       <Card sectioned>
         <EmptyState
           heading="Create reward product"

@@ -38,6 +38,9 @@ const shopifyApiRest = {
           return null;
         }
       },
+      update: async (session) => {
+        // to do
+      },
       get: async (session, productId, id) => {
         try {
           const response = await shopify.rest.Metafield.find(

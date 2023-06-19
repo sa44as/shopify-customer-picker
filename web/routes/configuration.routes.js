@@ -9,6 +9,7 @@ const configurationExternalRoutes = () => {
 }
 
 const configurationInternalRoutes = () => {
+  router.get("/reward_product/:shopify_product_id", configurationController.isRewardProduct);
   router.get("/reward_products", configurationController.getRewardProducts);
   router.post("/reward_product", configurationController.createRewardProduct);
   router.patch("/reward_product/:shopify_product_id", configurationController.editRewardProduct);

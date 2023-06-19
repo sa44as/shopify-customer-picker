@@ -23,11 +23,11 @@ const customerController = {
 
     const pointsBalance = response?.points_balance?.[0]?.points_balance;
 
-    return res.json(
+    return res.status(200).json(
       {
         points_balance: pointsBalance,
       }
-    ).status(200);
+    );
   },
 }
 

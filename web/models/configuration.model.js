@@ -34,11 +34,19 @@ const configurationSchema = new Schema(
           required: true,
           unique: true,
         },
+        shopify_product_title: {
+          type: String,
+          required: true,
+        },
+        shopify_product_image_url: {
+          type: String,
+        },
         points_price: {
           type: Number,
           required: true,
           min: configurationValidation.reward_products.points_price.min,
         },
+        // sell_with_money currently is not using, but can be necessary in the future
         sell_with_money: {
           type: Boolean,
           required: true,

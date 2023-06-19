@@ -8,8 +8,9 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
-console.log('shopifySession: ', shopifySession);
-        // is set for test, but dates functionality can be help later for dates development finalization if something will be necessary to improve or correct.
+        // debugger
+        console.log('shopifySession: ', shopifySession);
+        // is set for test, but dates functionality can be help later for dates development finalization if something will be necessary to improve or correct (the possible thing can be timezone to work incorrect or can be improved).
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
         tomorrowDate.setDate(currentDate.getDate() + 1);
@@ -28,44 +29,50 @@ console.log('shopifySession: ', shopifySession);
             shop: shopifySession.shop,
             state: shopifySession.state,
             // is set for test
-            reward_products: [
-              {
-                shopify_product_id: "7489095598319",
-                points_price: 79.95,
-                sell_with_money: false,
-                shopify_metafield: {
-                  id: "test", // to do, need to create metafield, and get id for product with above values
-                  points_price: 79.95,
-                  sell_with_money: false,
-                },
-              },
-              {
-                shopify_product_id: "632910392",
-                points_price: 100,
-                sell_with_money: true,
-                shopify_metafield: {
-                  id: "test", // to do, need to create metafield, and get id for product with above values
-                  points_price: 79.95,
-                  sell_with_money: false,
-                },
-              },
-            ],
+            // reward_products CRUD done, that's why commented, CRUD is accessible on App admin interface, URLs = /reward_products and /reward_products/[shopify_product_id]
+            // reward_products: [
+            //   {
+            //     shopify_product_id: "7489095598319",
+            //     points_price: 79.95,
+            //     sell_with_money: false,
+            //     shopify_metafield: {
+            //       id: "test", // to do, need to create metafield, and get id for product with above values
+            //       points_price: 79.95,
+            //       sell_with_money: false,
+            //     },
+            //   },
+            //   {
+            //     shopify_product_id: "632910392",
+            //     points_price: 100,
+            //     sell_with_money: true,
+            //     shopify_metafield: {
+            //       id: "test", // to do, need to create metafield, and get id for product with above values
+            //       points_price: 79.95,
+            //       sell_with_money: false,
+            //     },
+            //   },
+            // ],
+            // CRUD to do, should be like reward_products, URLs = /product_points and /product_points/[shopify_product_id]
             products_points: [
               {
                 shopify_product_id: "632910392",
                 points: 2,
               },
             ],
+            // CRUD to do, should be like reward_products, URLs = /customers_points and /customers_points/[shopify_customer_id]
             customers_points: [
               {
                 shopify_customer_id: "115310627314723950",
                 points: 3,
               },
             ],
+            // CRUD to do, should be 3 inputs = FROM (date), TO (date), POINTS (number), URLs = /dates_points and /dates_points/[date_objectID]
             dates_points: [
               datesPoints,
             ],
+            // CRUD to do, should be one input = POINTS (number)
             pre_sale_products_points: 20,
+            // CRUD to do, should be one input = POINTS (number)
             gift_card_products_points: 30,
             // end of is set for test
           }
@@ -243,7 +250,7 @@ const find = async (filter, projection, options) => {
   }
 }
 
-// to do
+// to do, not sure if necessary, leaving here for the furter development can be help
 const update = async ({ shopify_session__id, default_points, products_points, customers_points }, where) => {
   const record = {};
   let data_products_points = null;
@@ -287,20 +294,28 @@ const update = async ({ shopify_session__id, default_points, products_points, cu
     throw Error('Error while updating Configuration')
   }
 }
+// end of to do, not sure if necessary, leaving here for the furter development can be help
 
-const getTransformedRewardProductData = async (shopify_session, rewardProduct) => {
+const getTransformedRewardProductData = async (shopify_session, rewardProduct, isUpdate) => {
   const isRewardProductDataValid = rewardProduct && typeof rewardProduct === 'object' && rewardProduct.shopify_product_id && rewardProduct.points_price;
   if (!isRewardProductDataValid) return null;
 
   const metafieldValue = {
     points_price: rewardProduct.points_price,
   };
-  const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
+
+  if (isUpdate) {
+    // to do, need to update shopify metafield
+  } else {
+    const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
+  }
 
   const transformedRewardProduct = {
     shopify_product_id: rewardProduct.shopify_product_id,
     points_price: rewardProduct.points_price,
     shopify_metafield: shopifyMetafield,
+    shopify_product_title: rewardProduct.shopify_product_title,
+    shopify_product_image_url: rewardProduct.shopify_product_image_url,
   };
 
   return transformedRewardProduct;
@@ -319,13 +334,38 @@ const createRewardProduct = async ({shopify_session, reward_product}) => {
         $push: {
           reward_products: transformedRewardProductData,
         }
-      }
+      },
     );
-    return response;
+    return transformedRewardProductData;
   } catch (err) {
     return {
       error: true,
       message: 'Error while creating Reward product Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const updateRewardProduct = async ({shopify_session, reward_product}) => {
+  const transformedRewardProductData = await getTransformedRewardProductData(shopify_session, reward_product, true);
+  // debugger
+  console.log("transformedRewardProductData:isUpdate: ", transformedRewardProductData);
+  try {
+    // to do, need to find reward product and update it, instead of pushing new reward product to reward_products array
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $push: {
+          reward_products: transformedRewardProductData,
+        }
+      },
+    );
+    return transformedRewardProductData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while updating Reward product Configuration. Original err.message: ' + err.message,
     };
   }
 }
@@ -336,6 +376,7 @@ const configurationService = {
   find,
   update,
   createRewardProduct,
+  updateRewardProduct,
 }
 
 export { configurationService }

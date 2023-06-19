@@ -16,7 +16,7 @@ export function RewardProductsIndex({ rewardProducts, loading }) {
   };
 
   const rowMarkup = rewardProducts.map(
-    ({ shopify_product_id, shopify_product_image_url, shopify_product_title, points_price }, index) => {
+    ({ shopify_product_id, shopify_product_title, shopify_product_image_url, points_price }, index) => {
       /* The form layout, created using Polaris components. Includes the reward product data set above. */
       return (
         <IndexTable.Row
@@ -24,20 +24,20 @@ export function RewardProductsIndex({ rewardProducts, loading }) {
           key={shopify_product_id}
           position={index}
           onClick={() => {
-            navigate(`/reward_products/${shopify_product_id}`);
+            navigate(`/reward_products/${shopify_product_id.includes("gid://") ? shopify_product_id.split("/").length && shopify_product_id.split("/")[shopify_product_id.split("/").length - 1] : shopify_product_id}`);
           }}
         >
           <IndexTable.Cell>
             <Thumbnail
-              source={null || ImageMajor}
+              source={shopify_product_image_url || ImageMajor}
               alt="placeholder"
               color="base"
               size="small"
             />
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <UnstyledLink data-primary-link url={`/reward_products/${shopify_product_id}`}>
-              {truncate(shopify_product_title, 25)}
+            <UnstyledLink data-primary-link url={`/reward_products/${shopify_product_id.includes("gid://") ? shopify_product_id.split("/").length && shopify_product_id.split("/")[shopify_product_id.split("/").length - 1] : shopify_product_id}}`}>
+              {truncate(shopify_product_title, 45)}
             </UnstyledLink>
           </IndexTable.Cell>
           <IndexTable.Cell>{points_price}</IndexTable.Cell>

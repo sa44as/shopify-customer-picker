@@ -11,7 +11,7 @@ query Input {
         ...on ProductVariant {
             id
             product {
-              metafield(namespace: "loyalty_program", key: "configurations"){
+              metafield(namespace: "loyalty_program", key: "configuration"){
                 value
               }
             }
