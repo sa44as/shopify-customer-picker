@@ -36,7 +36,7 @@ export function RewardProductsIndex({ rewardProducts, loading }) {
             />
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <UnstyledLink data-primary-link url={`/reward_products/${shopify_product_id.includes("gid://") ? shopify_product_id.split("/").length && shopify_product_id.split("/")[shopify_product_id.split("/").length - 1] : shopify_product_id}}`}>
+            <UnstyledLink data-primary-link url={`/reward_products/${shopify_product_id.includes("gid://") ? shopify_product_id.split("/").length && shopify_product_id.split("/")[shopify_product_id.split("/").length - 1] : shopify_product_id}`}>
               {truncate(shopify_product_title, 45)}
             </UnstyledLink>
           </IndexTable.Cell>

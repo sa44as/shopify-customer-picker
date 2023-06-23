@@ -31,7 +31,7 @@ export default function RewardProductEdit() {
     return (
       <Page>
         <TitleBar
-          title="Edit Reward Product"
+          title="Edit Reward product"
           breadcrumbs={breadcrumbs}
           primaryAction={null}
         />

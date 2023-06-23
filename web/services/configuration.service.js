@@ -4,12 +4,12 @@ import { shopifyApiRest, shopifyApiGraphql } from "./map.js";
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
     // debugger
-    console.log('###########################data.operationType: ', data.operationType);
+    // console.log('data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
         // debugger
-        console.log('shopifySession: ', shopifySession);
+        // console.log('shopifySession: ', shopifySession);
         // is set for test, but dates functionality can be help later for dates development finalization if something will be necessary to improve or correct (the possible thing can be timezone to work incorrect or can be improved).
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
@@ -79,7 +79,7 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
         ];
         const response = await create(documents);
         // debugger
-        console.log('configuration creation response: ', response);
+        // console.log('configuration creation response: ', response);
         if (response.error) {
           console.log('configuration not created for shop: ', data.fullDocument.shop, ' the reason is: ', response.message);
         } else {
@@ -297,19 +297,19 @@ const update = async ({ shopify_session__id, default_points, products_points, cu
 // end of to do, not sure if necessary, leaving here for the furter development can be help
 
 const getTransformedRewardProductData = async (shopify_session, rewardProduct, isUpdate) => {
-  const isRewardProductDataValid = rewardProduct && typeof rewardProduct === 'object' && rewardProduct.shopify_product_id && rewardProduct.points_price;
+  const isRewardProductDataValid = rewardProduct && typeof rewardProduct === 'object' && rewardProduct.shopify_product_id && rewardProduct.points_price && (isUpdate ? rewardProduct.shopify_metafield_id : true);
   if (!isRewardProductDataValid) return null;
 
   const metafieldValue = {
     points_price: rewardProduct.points_price,
   };
 
+  let shopifyMetafield;
   if (isUpdate) {
-    // to do, need to update shopify metafield
+    shopifyMetafield = await shopifyApiRest.product.metafield.update(shopify_session, rewardProduct.shopify_product_id, rewardProduct.shopify_metafield_id, metafieldValue, "json");
   } else {
+    shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
   }
-  // to do move up
-  const shopifyMetafield = await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
 
   const transformedRewardProduct = {
     shopify_product_id: rewardProduct.shopify_product_id,
@@ -324,8 +324,6 @@ const getTransformedRewardProductData = async (shopify_session, rewardProduct, i
 
 const createRewardProduct = async ({shopify_session, reward_product}) => {
   const transformedRewardProductData = await getTransformedRewardProductData(shopify_session, reward_product);
-  // debugger
-  console.log("transformedRewardProductData: ", transformedRewardProductData);
   try {
     const response = await configurationModel.findOneAndUpdate(
       {
@@ -348,25 +346,62 @@ const createRewardProduct = async ({shopify_session, reward_product}) => {
 
 const updateRewardProduct = async ({shopify_session, reward_product}) => {
   const transformedRewardProductData = await getTransformedRewardProductData(shopify_session, reward_product, true);
-  // debugger
-  console.log("transformedRewardProductData:isUpdate: ", transformedRewardProductData);
   try {
-    // to do, need to find reward product and update it, instead of pushing new reward product to reward_products array
     const response = await configurationModel.findOneAndUpdate(
       {
         shopify_session: shopify_session._id,
       },
       {
-        $push: {
-          reward_products: transformedRewardProductData,
+        $set: {
+          [`reward_products.$[outer].points_price`]: transformedRewardProductData.points_price,
+          [`reward_products.$[outer].shopify_metafield`]: transformedRewardProductData.shopify_metafield,
         }
       },
+      {
+        arrayFilters: [
+          {
+            "outer.shopify_product_id": transformedRewardProductData.shopify_product_id
+          }
+        ]
+      }
     );
     return transformedRewardProductData;
   } catch (err) {
     return {
       error: true,
       message: 'Error while updating Reward product Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const deleteRewardProduct = async ({shopify_session, shopify_product_id}) => {
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+        "reward_products.shopify_product_id": shopify_product_id,
+      },
+      {
+        $pull: {
+          reward_products: {
+            shopify_product_id: shopify_product_id,
+          }
+        }
+      }
+    );
+
+    const isRewardProduct = response && typeof response === "object";
+    const rewardProductConfiguration = isRewardProduct ? response.reward_products.filter((reward_product) => reward_product.shopify_product_id == shopify_product_id)[0] : null;
+
+    if (rewardProductConfiguration) {
+      await shopifyApiRest.product.metafield.delete(shopify_session, shopify_product_id, rewardProductConfiguration.shopify_metafield.id);
+    }
+
+    return response;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while deleting Reward product Configuration. Original err.message: ' + err.message,
     };
   }
 }
@@ -378,6 +413,7 @@ const configurationService = {
   update,
   createRewardProduct,
   updateRewardProduct,
+  deleteRewardProduct,
 }
 
 export { configurationService }

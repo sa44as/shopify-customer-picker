@@ -25,8 +25,6 @@ const shopifyApiRest = {
           metafield.key = key;
           metafield.value = type === "json" ? JSON.stringify(value) : value;
           metafield.type = type;
-          // debugger
-          console.log("metafield: ", metafield);
           await metafield.save(
             {
               update: true,
@@ -38,21 +36,49 @@ const shopifyApiRest = {
           return null;
         }
       },
-      update: async (session) => {
-        // to do
+      update: async (session, productId, id, value, type) => {
+        try {
+          const metafield = new shopify.api.rest.Metafield({session});
+          metafield.product_id = productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
+          metafield.id = id;
+          metafield.value = type === "json" ? JSON.stringify(value) : value;
+          metafield.type = type;
+          await metafield.save({
+            update: true,
+          });
+          return metafield;
+        } catch (err) {
+          console.log("shopifyApiRest.product.metafield.update.err: ", err);
+          return null;
+        }
       },
       get: async (session, productId, id) => {
         try {
-          const response = await shopify.rest.Metafield.find(
+          const response = await shopify.api.rest.Metafield.find(
             {
               session,
-              product_id: productId,
+              product_id: productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
               id,
             }
           );
           return response;
         } catch (err) {
           console.log("shopifyApiRest.product.metafield.get.err: ", err);
+          return null;
+        }
+      },
+      delete: async (session, productId, id) => {
+        try {
+          await shopify.api.rest.Metafield.delete(
+            {
+              session,
+              product_id: productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
+              id,
+            }
+          );
+          return true;
+        } catch (err) {
+          console.log("shopifyApiRest.product.metafield.delete.err: ", err);
           return null;
         }
       },

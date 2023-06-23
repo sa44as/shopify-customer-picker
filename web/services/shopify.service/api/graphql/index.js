@@ -35,6 +35,19 @@ const MUTATION = {
         }  
       `,
   },
+  METAFIELD: {
+    DELETE: `
+      mutation metafieldDelete($input: MetafieldDeleteInput!) {
+        metafieldDelete(input: $input) {
+          deletedId
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `,
+  },
 };
 
 const shopifyApiGraphql = {
@@ -58,18 +71,49 @@ const shopifyApiGraphql = {
       } catch (err) {
         console.log("shopifyApiGraphql.discountAutomaticApp.create.err: ", err);
         // the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
-        if (err instanceof GraphqlQueryError) {
-          throw new Error(
-            `${err.message}\n${JSON.stringify(err.response, null, 2)}`
-          );
-        } else {
-          throw err;
-        }
+        // if (err instanceof GraphqlQueryError) {
+        //   throw new Error(
+        //     `${err.message}\n${JSON.stringify(err.response, null, 2)}`
+        //   );
+        // } else {
+        //   throw err;
+        // }
         // end of the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
-        // return null; // uncomment when above error reporting is commented
+        return null; // uncomment when above error reporting is commented
       }
     },
   },
+  metafield: {
+    delete: async (session, input) => {
+      const id = input.id.includes("gid://") ? input.id : "gid://shopify/Metafield" + input.id;
+      try {
+        const client = new shopify.api.clients.Graphql({ session });
+        const response = await client.query({
+          data: {
+            query: MUTATION.METAFIELD.DELETE,
+            variables: {
+              input: {
+                id: id,
+              },
+            },
+          },
+        });
+        return response;
+      } catch (err) {
+        console.log("shopifyApiGraphql.metafield.delete.err: ", err);
+        // the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
+        // if (err instanceof GraphqlQueryError) {
+        //   throw new Error(
+        //     `${err.message}\n${JSON.stringify(err.response, null, 2)}`
+        //   );
+        // } else {
+        //   throw err;
+        // }
+        // end of the below commented error reporting type can be necessary for debug, don't remove, to do, low priority
+        return null; // uncomment when above error reporting is commented
+      }
+    },
+  }
 }
 
 export { shopifyApiGraphql }

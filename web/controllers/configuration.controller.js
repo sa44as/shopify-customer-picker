@@ -7,6 +7,9 @@ const configurationController = {
       {
         shopify_session: shopifySessionFromInternalApiRequest?._id || req.shopifySession._id,
         "reward_products.shopify_product_id": shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id,
+      },
+      {
+        "reward_products.$": 1,
       }
     );
 
@@ -27,6 +30,9 @@ const configurationController = {
       {
         shopify_session: shopifySessionFromInternalApiRequest?._id,
         "reward_products.shopify_product_id": req.body.shopifyProductId,
+      },
+      {
+        "reward_products.$": 1,
       }
     );
 
@@ -89,33 +95,34 @@ const configurationController = {
       );
     }
 
-    // to do, check the necessary field that's need to be passed
-    // const response = await configurationService.updateRewardProduct(
-    //   {
-    //     shopify_session: shopifySessionFromInternalApiRequest,
-    //     reward_product: {
-    //       shopify_product_id: req.body.shopifyProductId,
-    //       points_price: req.body.pointsPrice,
-    //       shopify_product_title: req.body.shopifyProductTitle,
-    //       shopify_product_image_url: req.body.shopifyProductImageUrl,
-    //     },
-    //   }
-    // );
+    const response = await configurationService.updateRewardProduct(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        reward_product: {
+          shopify_product_id: req.body.shopifyProductId,
+          points_price: req.body.pointsPrice,
+          shopify_metafield_id: rewardProductConfiguration.shopify_metafield.id,
+        },
+      }
+    );
 
     return res.status(200).json(
       {
-        // to do
-        reward_product: 'to do', //response,
+        reward_product: response,
       }
     );
   },
   deleteRewardProduct: async (req, res) => {
-    // to do
-    return res.json(
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.deleteRewardProduct(
       {
-        response: "to do",
+        shopify_session: shopifySessionFromInternalApiRequest,
+        shopify_product_id: 'gid://shopify/Product/' + req.params.shopify_product_id,
       }
-    ).status(200);
+    );
+
+    return res.status(200).end();
   },
   getRewardProducts: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
@@ -126,11 +133,11 @@ const configurationController = {
       }
     );
 
-    return res.json(
+    return res.status(200).json(
       {
         reward_products: response[0]?.reward_products,
       }
-    ).status(200);
+    );
   },
 }
 

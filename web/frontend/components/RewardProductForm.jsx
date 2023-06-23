@@ -1,19 +1,15 @@
 import { useState, useCallback } from "react";
 import {
-  Banner,
   Card,
   Form,
   FormLayout,
   TextField,
   Button,
-  ChoiceList,
-  Select,
   Thumbnail,
   Icon,
   Stack,
   TextStyle,
   Layout,
-  EmptyState,
 } from "@shopify/polaris";
 import {
   ContextualSaveBar,
@@ -42,7 +38,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
       (async () => {
         const parsedBody = body;
         // debugger
-        console.log("parsedBody: ", parsedBody);
+        // console.log("parsedBody: ", parsedBody);
         const rewardProductId = rewardProduct && rewardProduct.shopify_product_id.includes("gid://") ? rewardProduct.shopify_product_id.split("/").length && rewardProduct.shopify_product_id.split("/")[rewardProduct.shopify_product_id.split("/").length - 1] : rewardProduct?.shopify_product_id;
         /* construct the appropriate URL to send the API request to based on whether the QR code is new or being updated */
         const url = rewardProductId ? `/api/internal/v1/configuration/reward_product/${rewardProductId}` : "/api/internal/v1/configuration/reward_product";
@@ -160,7 +156,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     reset();
     /* The isDeleting state disables the delete Reward product button to show the user that an action is in progress */
     setIsDeleting(true);
-    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.shopify_product_id}`, {
+    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.shopify_product_id.includes("gid://") ? rewardProduct.shopify_product_id.split("/").length && rewardProduct.shopify_product_id.split("/")[rewardProduct.shopify_product_id.split("/").length - 1] : rewardProduct?.shopify_product_id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
