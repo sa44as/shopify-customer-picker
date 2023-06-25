@@ -20,11 +20,13 @@ export default function Routes({ pages }) {
     <Route key={path} path={path} element={<Component />} />
   ));
 
+  const HomePage = routes.find(({ path }) => path === "/reward_products").component;
   const NotFound = routes.find(({ path }) => path === "/notFound").component;
 
   return (
     <ReactRouterRoutes>
       {routeComponents}
+      <Route path="/" element={<HomePage />} />
       <Route path="*" element={<NotFound />} />
     </ReactRouterRoutes>
   );

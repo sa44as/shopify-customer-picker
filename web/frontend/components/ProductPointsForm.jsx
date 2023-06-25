@@ -25,10 +25,10 @@ import { useAuthenticatedFetch, useAppQuery } from "../hooks";
 /* Import custom hooks for forms */
 import { useForm, useField, notEmptyString, positiveIntegerString } from "@shopify/react-form";
 
-export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
-  const [rewardProduct, setRewardProduct] = useState(InitialRewardProduct);
+export function ProductPointsForm({ productPoints: InitialProductPoints }) {
+  const [productPoints, setProductPoints] = useState(InitialProductPoints);
   const [showResourcePicker, setShowResourcePicker] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(rewardProduct);
+  const [selectedProduct, setSelectedProduct] = useState(productPoints);
   const navigate = useNavigate();
   const appBridge = useAppBridge();
   const fetch = useAuthenticatedFetch();
@@ -39,11 +39,11 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
         const parsedBody = body;
         // debugger
         // console.log("parsedBody: ", parsedBody);
-        const rewardProductId = rewardProduct && rewardProduct.shopify_product_id.includes("gid://") ? rewardProduct.shopify_product_id.split("/").length && rewardProduct.shopify_product_id.split("/")[rewardProduct.shopify_product_id.split("/").length - 1] : rewardProduct?.shopify_product_id;
-        /* construct the appropriate URL to send the API request to based on whether the Reward product is new or being updated */
-        const url = rewardProductId ? `/api/internal/v1/configuration/reward_product/${rewardProductId}` : "/api/internal/v1/configuration/reward_product";
-        /* a condition to select the appropriate HTTP method: PATCH to update a Reward product or POST to create a new Reward product */
-        const method = rewardProductId ? "PATCH" : "POST";
+        const productPointsId = productPoints && productPoints.shopify_product_id.includes("gid://") ? productPoints.shopify_product_id.split("/").length && productPoints.shopify_product_id.split("/")[productPoints.shopify_product_id.split("/").length - 1] : productPoints?.shopify_product_id;
+        /* construct the appropriate URL to send the API request to based on whether the Product points multiplier is new or being updated */
+        const url = productPointsId ? `/api/internal/v1/configuration/product_points/${productPointsId}` : "/api/internal/v1/configuration/product_points";
+        /* a condition to select the appropriate HTTP method: PATCH to update a Product points multiplier or POST to create a new Product points multiplier */
+        const method = productPointsId ? "PATCH" : "POST";
         /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
         const response = await fetch(url, {
           method,
@@ -53,14 +53,14 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
 
         if (response.ok) {
           makeClean();
-          const getRewardProduct = await response.json();
-          const productId = getRewardProduct.reward_product.shopify_product_id.includes("gid://") ? getRewardProduct.reward_product.shopify_product_id.split("/").length && getRewardProduct.reward_product.shopify_product_id.split("/")[getRewardProduct.reward_product.shopify_product_id.split("/").length - 1] : getRewardProduct.reward_product.shopify_product_id;
-          /* if this is a new Reward product, then save the Reward product and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
-          if (!rewardProductId) {
-            navigate(`/reward_products/${productId}`);
-            /* if this is a Reward product update, update the Reward product state in this component */
+          const getProductPoints = await response.json();
+          const productId = getProductPoints.product_points.shopify_product_id.includes("gid://") ? getProductPoints.product_points.shopify_product_id.split("/").length && getProductPoints.product_points.shopify_product_id.split("/")[getProductPoints.product_points.shopify_product_id.split("/").length - 1] : getProductPoints.product_points.shopify_product_id;
+          /* if this is a new Product points multiplier, then save the Product points multiplier and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
+          if (!productPointsId) {
+            navigate(`/products_points/${productId}`);
+            /* if this is a Product points multiplier update, update the Product points multiplier state in this component */
           } else {
-            setRewardProduct(getRewardProduct.reward_product);
+            setProductPoints(getProductPoints.product_points);
           }
         } else if (response.status === 409) {
           makeClean();
@@ -72,7 +72,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
       })();
       return { status: "success" };
     },
-    [rewardProduct, setRewardProduct]
+    [productPoints, setProductPoints]
   );
 
 
@@ -88,7 +88,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
   const {
     fields: {
       shopifyProductId,
-      pointsPrice,
+      points,
       shopifyProductTitle,
       shopifyProductImageUrl,
     },
@@ -100,18 +100,18 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
   } = useForm({
     fields: {
       shopifyProductId: useField({
-        value: rewardProduct?.shopify_product_id || "",
+        value: productPoints?.shopify_product_id || "",
         validates: [notEmptyString("Please select a product")],
       }),
-      pointsPrice: useField({
-        value: rewardProduct?.points_price || "",
-        validates: [notEmptyString("Please give points price your Reward product"), positiveIntegerString("The points price can't accept the negative value")],
+      points: useField({
+        value: productPoints?.points || "",
+        validates: [notEmptyString("Please give points price multiplier your product"), positiveIntegerString("The points price multiplier can't accept the negative value")],
       }),
       shopifyProductTitle: useField({
-        value: rewardProduct?.shopify_product_title || "",
+        value: productPoints?.shopify_product_title || "",
       }),
       shopifyProductImageUrl: useField({
-        value: rewardProduct?.shopify_product_image_url || "",
+        value: productPoints?.shopify_product_image_url || "",
       }),
     },
     onSubmit,
@@ -152,19 +152,19 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
   );
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const deleteRewardProduct = useCallback(async () => {
+  const deleteProductPoints = useCallback(async () => {
     reset();
-    /* The isDeleting state disables the delete Reward product button to show the user that an action is in progress */
+    /* The isDeleting state disables the delete Product points multiplier button to show the user that an action is in progress */
     setIsDeleting(true);
-    const response = await fetch(`/api/internal/v1/configuration/reward_product/${rewardProduct.shopify_product_id.includes("gid://") ? rewardProduct.shopify_product_id.split("/").length && rewardProduct.shopify_product_id.split("/")[rewardProduct.shopify_product_id.split("/").length - 1] : rewardProduct?.shopify_product_id}`, {
+    const response = await fetch(`/api/internal/v1/configuration/product_points/${productPoints.shopify_product_id.includes("gid://") ? productPoints.shopify_product_id.split("/").length && productPoints.shopify_product_id.split("/")[productPoints.shopify_product_id.split("/").length - 1] : productPoints?.shopify_product_id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     });
 
     if (response.ok) {
-      navigate(`/`);
+      navigate(`/products_points`);
     }
-  }, [rewardProduct]);
+  }, [productPoints]);
 
 
   /*
@@ -199,7 +199,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
               <Card
                 title="Product"
                 actions={
-                  rewardProduct?.shopify_product_id ? null :
+                  productPoints?.shopify_product_id ? null :
                   [
                     {
                       content: shopifyProductId.value
@@ -256,27 +256,27 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
                   )}
                 </Card.Section>
               </Card>
-              <Card sectioned title="Points price">
+              <Card sectioned title="Product money price $1 = [x] points price multiplier">
                 <TextField
-                  {...pointsPrice}
+                  {...points}
                   type="number"
-                  label="Points price"
+                  label="Points price multiplier"
                   labelHidden
-                  helpText="Give points price your reward product"
+                  helpText="Give points price multiplier your product"
                 />
               </Card>
             </FormLayout>
           </Form>
         </Layout.Section>
         <Layout.Section>
-          {rewardProduct?.shopify_product_id && (
+          {productPoints?.shopify_product_id && (
             <Button
               outline
               destructive
-              onClick={deleteRewardProduct}
+              onClick={deleteProductPoints}
               loading={isDeleting}
             >
-              Delete Reward product
+              Delete Product points multiplier
             </Button>
           )}
         </Layout.Section>
@@ -284,4 +284,3 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
     </Stack>
   );
 }
-

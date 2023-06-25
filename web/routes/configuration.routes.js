@@ -14,6 +14,11 @@ const configurationInternalRoutes = () => {
   router.post("/reward_product", configurationController.createRewardProduct);
   router.patch("/reward_product/:shopify_product_id", configurationController.editRewardProduct);
   router.delete("/reward_product/:shopify_product_id", configurationController.deleteRewardProduct);
+  router.get("/product_points/:shopify_product_id", configurationController.getProductPoints);
+  router.get("/products_points", configurationController.getProductsPoints);
+  router.post("/product_points", configurationController.createProductPoints);
+  router.patch("/product_points/:shopify_product_id", configurationController.editProductPoints);
+  router.delete("/product_points/:shopify_product_id", configurationController.deleteProductPoints);
   return router;
 }
 

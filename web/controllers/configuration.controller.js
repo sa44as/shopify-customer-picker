@@ -124,6 +124,29 @@ const configurationController = {
 
     return res.status(200).end();
   },
+  getProductPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest._id,
+        "products_points.shopify_product_id": shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id,
+      },
+      {
+        "products_points.$": 1,
+      }
+    );
+
+    const isProductPoints = Array.isArray(response) && response.length;
+    const productPointsConfiguration = isProductPoints ? response[0].products_points.filter((product_points) => product_points.shopify_product_id == shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id)[0] : null;
+
+    return res.status(200).json(
+      {
+        product_points_exist: isProductPoints,
+        product_points_configuration: productPointsConfiguration,
+      }
+    );
+  },
   getRewardProducts: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
 
@@ -136,6 +159,121 @@ const configurationController = {
     return res.status(200).json(
       {
         reward_products: response[0]?.reward_products,
+      }
+    );
+  },
+  createProductPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const findResponse = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest?._id,
+        "products_points.shopify_product_id": req.body.shopifyProductId,
+      },
+      {
+        "products_points.$": 1,
+      }
+    );
+
+    const isProductPoints = Array.isArray(findResponse) && findResponse.length;
+    const productPointsConfiguration = isProductPoints ? findResponse[0].products_points.filter((product_points) => product_points.shopify_product_id == req.body.shopifyProductId)[0] : null;
+    
+    if (isProductPoints) {
+      return res.status(409).json(
+        {
+          error: {
+            statusCode: 409,
+            message: "The product points multiplier already set for this product",
+          },
+          product_points_exist: isProductPoints,
+          product_points_configuration: productPointsConfiguration,
+        }
+      );
+    }
+
+    const response = await configurationService.createProductPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        product_points: {
+          shopify_product_id: req.body.shopifyProductId,
+          points: req.body.points,
+          shopify_product_title: req.body.shopifyProductTitle,
+          shopify_product_image_url: req.body.shopifyProductImageUrl,
+        },
+      }
+    );
+
+    return res.status(201).json(
+      {
+        product_points: response,
+      }
+    );
+  },
+  editProductPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const findResponse = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest?._id,
+        "products_points.shopify_product_id": req.body.shopifyProductId,
+      }
+    );
+
+    const isProductPoints = Array.isArray(findResponse) && findResponse.length;
+    const productPointsConfiguration = isProductPoints ? findResponse[0].products_points.filter((product_points) => product_points.shopify_product_id == req.body.shopifyProductId)[0] : null;
+
+    if (!isProductPoints) {
+      return res.status(400).json(
+        {
+          error: {
+            statusCode: 400,
+            message: "The product points multipler not found",
+          },
+          is_product_points_exist: isProductPoints,
+        }
+      );
+    }
+
+    const response = await configurationService.updateProductPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        product_points: {
+          shopify_product_id: req.body.shopifyProductId,
+          points: req.body.points,
+        },
+      }
+    );
+
+    return res.status(200).json(
+      {
+        product_points: response,
+      }
+    );
+  },
+  deleteProductPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.deleteProductPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        shopify_product_id: 'gid://shopify/Product/' + req.params.shopify_product_id,
+      }
+    );
+
+    return res.status(200).end();
+  },
+  getProductsPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest._id,
+      }
+    );
+
+    return res.status(200).json(
+      {
+        products_points: response[0]?.products_points,
       }
     );
   },

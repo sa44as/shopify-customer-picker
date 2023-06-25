@@ -68,11 +68,19 @@ const configurationSchema = new Schema(
         shopify_product_id: {
           type: String,
           required: true,
+          unique: true,
+        },
+        shopify_product_title: {
+          type: String,
+          required: true,
+        },
+        shopify_product_image_url: {
+          type: String,
         },
         points: {
           type: Number,
           required: true,
-          default: 1,
+          min: configurationValidation.reward_products.points_price.min,
         },
       }
     ],

@@ -52,13 +52,13 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
             //     },
             //   },
             // ],
-            // CRUD to do, should be like reward_products, URLs = /product_points and /product_points/[shopify_product_id]
-            products_points: [
-              {
-                shopify_product_id: "632910392",
-                points: 2,
-              },
-            ],
+            // CRUD done, that's why commented, CRUD is accessible on App admin interface, like reward_products, URLs = /products_points and /products_points/[shopify_product_id]
+            // products_points: [
+            //   {
+            //     shopify_product_id: "632910392",
+            //     points: 2,
+            //   },
+            // ],
             // CRUD to do, should be like reward_products, URLs = /customers_points and /customers_points/[shopify_customer_id]
             customers_points: [
               {
@@ -102,28 +102,31 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
   });
 }
 
-const getTransformedProductsPointsData = (productsPoints) => {
-  const isProductsPointsDataValid = Array.isArray(productsPoints) && productsPoints.length;
-  if (!isProductsPointsDataValid) return null;
+// ignored call after completion the CRUD system, do not necessary when configuration is creating on installation time
+// const getTransformedProductsPointsData = (productsPoints) => {
+//   const isProductsPointsDataValid = Array.isArray(productsPoints) && productsPoints.length;
+//   if (!isProductsPointsDataValid) return null;
 
-  let transformedProductsPoints = [];
+//   let transformedProductsPoints = [];
 
-  let isProductPointsDataValid, transformedProductPoints;
-  for (const productPoints of productsPoints) {
-    isProductPointsDataValid = productPoints.shopify_product_id && productPoints.points;
-    if (!isProductPointsDataValid) continue;
+//   let isProductPointsDataValid, transformedProductPoints;
+//   for (const productPoints of productsPoints) {
+//     isProductPointsDataValid = productPoints.shopify_product_id && productPoints.points;
+//     if (!isProductPointsDataValid) continue;
 
-    isProductPointsDataValid = false;
-    transformedProductPoints = {};
+//     isProductPointsDataValid = false;
+//     transformedProductPoints = {};
 
-    transformedProductPoints.shopify_product_id = productPoints.shopify_product_id;
-    transformedProductPoints.points = productPoints.points;
+//     transformedProductPoints.shopify_product_id = productPoints.shopify_product_id;
+//     transformedProductPoints.points = productPoints.points;
+//     transformedProductPoints.shopify_product_title = productPoints.shopify_product_title,
+//     transformedProductPoints.shopify_product_image_url = productPoints.shopify_product_image_url,
 
-    transformedProductsPoints = [...transformedProductsPoints, transformedProductPoints];
-  }
+//     transformedProductsPoints = [...transformedProductsPoints, transformedProductPoints];
+//   }
 
-  return transformedProductsPoints.length ? transformedProductsPoints : null;
-}
+//   return transformedProductsPoints.length ? transformedProductsPoints : null;
+// }
 
 const getTransformedCustomersPointsData = (customersPoints) => {
   const isCustomersPointsDataValid = Array.isArray(customersPoints) && customersPoints.length;
@@ -197,16 +200,19 @@ const getTransformedConfigurationData = (documents) => {
 
     doc = {};
 
-    transformedProductsPoints = getTransformedProductsPointsData(item.products_points);
+    // ignored call, because do not necessary to insert when configuration is creating on installation time
+    // transformedProductsPoints = getTransformedProductsPointsData(item.products_points);
     transformedCustomersPoints = getTransformedCustomersPointsData(item.customers_points);
     transformedDatesPoints = getTransformedDatesPointsData(item.dates_points);
 
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
     if (item.shop) doc.shop = item.shop;
     if (item.state) doc.state = item.state;
-    if (item.reward_products) doc.reward_products = item.reward_products; // to do, it is necessary transformedRewardProducts function, also need to create product metafield and attach metafield id and other fields if necessary to reward_product.shopify_metafield
+    // ignored call, because do not necessary to insert when configuration is creating
+    // if (item.reward_products) doc.reward_products = item.reward_products;
     if (item.default_points) doc.default_points = item.default_points;
-    if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
+    // ignored call, because do not necessary to insert when configuration is creating
+    // if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
     if (transformedDatesPoints) doc.dates_points = transformedDatesPoints;
     if (item.pre_sale_products_points) doc.pre_sale_products_points = item.pre_sale_products_points;
@@ -406,6 +412,98 @@ const deleteRewardProduct = async ({shopify_session, shopify_product_id}) => {
   }
 }
 
+const getTransformedProductPointsData = async (productPoints) => {
+  const isProductPointsDataValid = productPoints && typeof productPoints === 'object' && productPoints.shopify_product_id && productPoints.points;
+  if (!isProductPointsDataValid) return null;
+
+  const transformedProductPoints = {
+    shopify_product_id: productPoints.shopify_product_id,
+    points: productPoints.points,
+    shopify_product_title: productPoints.shopify_product_title,
+    shopify_product_image_url: productPoints.shopify_product_image_url,
+  };
+
+  return transformedProductPoints;
+}
+
+const createProductPoints = async ({shopify_session, product_points}) => {
+  const transformedProductPointsData = await getTransformedProductPointsData(product_points);
+
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $push: {
+          products_points: transformedProductPointsData,
+        }
+      },
+    );
+
+    return transformedProductPointsData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while creating Product points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const updateProductPoints = async ({shopify_session, product_points}) => {
+  const transformedProductPointsData = await getTransformedProductPointsData(product_points);
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $set: {
+          [`products_points.$[outer].points`]: transformedProductPointsData.points,
+        }
+      },
+      {
+        arrayFilters: [
+          {
+            "outer.shopify_product_id": transformedProductPointsData.shopify_product_id
+          }
+        ]
+      }
+    );
+    return transformedProductPointsData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while updating Product points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const deleteProductPoints = async ({shopify_session, shopify_product_id}) => {
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+        "products_points.shopify_product_id": shopify_product_id,
+      },
+      {
+        $pull: {
+          products_points: {
+            shopify_product_id: shopify_product_id,
+          }
+        }
+      }
+    );
+
+    return response;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while deleting Product points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
 const configurationService = {
   watchNewShopExistenceAndSetupConfiguration,
   create,
@@ -414,6 +512,9 @@ const configurationService = {
   createRewardProduct,
   updateRewardProduct,
   deleteRewardProduct,
+  createProductPoints,
+  updateProductPoints,
+  deleteProductPoints,
 }
 
 export { configurationService }

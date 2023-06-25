@@ -1,6 +1,6 @@
 import { Card, Page, Layout, SkeletonBodyText } from "@shopify/polaris";
 import { Loading, TitleBar } from "@shopify/app-bridge-react";
-import { QRCodeForm } from "../../components";
+// import { QRCodeForm } from "../../components";
 
 export default function QRCodeEdit() {
   const breadcrumbs = [{ content: "QR codes", url: "/" }];

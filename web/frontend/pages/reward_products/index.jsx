@@ -6,10 +6,10 @@ import {
   Page,
   SkeletonBodyText,
 } from "@shopify/polaris";
-import { RewardProductsIndex } from "../components";
-import { useAppQuery } from "../hooks";
+import { RewardProductsIndex } from "../../components";
+import { useAppQuery } from "../../hooks";
 
-export default function HomePage() {
+export default function RewardProducts() {
   /*
     Add an App Bridge useNavigate hook to set up the navigate function.
     This function modifies the top-level browser URL so that you can
@@ -33,7 +33,7 @@ export default function HomePage() {
     url: "/api/internal/v1/configuration/reward_products",
   });
 
-  /* Set the QR codes to use in the list */
+  /* Set the Reward products to use in the list */
   const rewardProductsMarkup = getRewardProducts?.reward_products?.length ? (
     <RewardProductsIndex rewardProducts={getRewardProducts.reward_products} loading={isRefetching} />
   ) : null;
