@@ -7,6 +7,10 @@ const navigationMenuItems = [
     label: "Product points multipliers",
     destination: "/products_points",
   },
+  {
+    label: "Customer points multipliers",
+    destination: "/customers_points",
+  },
 ];
 
 export { navigationMenuItems }

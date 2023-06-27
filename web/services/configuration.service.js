@@ -504,6 +504,98 @@ const deleteProductPoints = async ({shopify_session, shopify_product_id}) => {
   }
 }
 
+const getTransformedCustomerPointsData = async (customerPoints) => {
+  const isCustomerPointsDataValid = customerPoints && typeof customerPoints === 'object' && customerPoints.shopify_customer_id && customerPoints.points;
+  if (!isCustomerPointsDataValid) return null;
+
+  const transformedCustomerPoints = {
+    shopify_customer_id: customerPoints.shopify_customer_id,
+    points: customerPoints.points,
+    shopify_customer_email: customerPoints.shopify_customer_email,
+    shopify_customer_fisrt_name: customerPoints.shopify_customer_first_name,
+    shopify_custoer_last_name: customerPoints.shopify_customer_last_name,
+  };
+
+  return transformedCustomerPoints;
+}
+
+const createCustomerPoints = async ({shopify_session, customer_points}) => {
+  const transformedCustomerPointsData = await getTransformedCustomerPointsData(customer_points);
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $push: {
+          customers_points: transformedCustomerPointsData,
+        }
+      },
+    );
+    return transformedCustomerPointsData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while creating Customer points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const updateCustomerPoints = async ({shopify_session, customer_points}) => {
+  const transformedCustomerPointsData = await getTransformedCustomerPointsData(customer_points);
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $set: {
+          [`customers_points.$[outer].points`]: transformedCustomerPointsData.points,
+          [`customers_points.$[outer].shopify_metafield`]: transformedCustomerPointsData.shopify_metafield,
+        }
+      },
+      {
+        arrayFilters: [
+          {
+            "outer.shopify_customer_id": transformedCustomerPointsData.shopify_customer_id
+          }
+        ]
+      }
+    );
+    return transformedCustomerPointsData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while updating Customer points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
+const deleteCustomerPoints = async ({shopify_session, shopify_customer_id}) => {
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+        "customers_points.shopify_customer_id": shopify_customer_id,
+      },
+      {
+        $pull: {
+          customers_points: {
+            shopify_customer_id: shopify_customer_id,
+          }
+        }
+      }
+    );
+
+    return response;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while deleting Customer points Configuration. Original err.message: ' + err.message,
+    };
+  }
+}
+
 const configurationService = {
   watchNewShopExistenceAndSetupConfiguration,
   create,
@@ -515,6 +607,9 @@ const configurationService = {
   createProductPoints,
   updateProductPoints,
   deleteProductPoints,
+  createCustomerPoints,
+  updateCustomerPoints,
+  deleteCustomerPoints,
 }
 
 export { configurationService }

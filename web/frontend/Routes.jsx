@@ -1,4 +1,4 @@
-import { Routes as ReactRouterRoutes, Route } from "react-router-dom";
+import { Routes as ReactRouterRoutes, Route, Navigate } from "react-router-dom";
 
 /**
  * File-based routing.
@@ -20,13 +20,12 @@ export default function Routes({ pages }) {
     <Route key={path} path={path} element={<Component />} />
   ));
 
-  const HomePage = routes.find(({ path }) => path === "/reward_products").component;
   const NotFound = routes.find(({ path }) => path === "/notFound").component;
 
   return (
     <ReactRouterRoutes>
       {routeComponents}
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={ <Navigate to="/reward_products" /> } />
       <Route path="*" element={<NotFound />} />
     </ReactRouterRoutes>
   );

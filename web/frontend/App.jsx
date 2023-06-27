@@ -21,7 +21,12 @@ export default function App() {
           <QueryProvider>
             {<NavigationMenu
               navigationLinks={navigationMenuItems}
-              matcher={(link, location) => link.destination === "/reward_products" && location.pathname === "/" ? true : link.destination === location.pathname}
+              // to do, matcher not working correctly, shopify bug, or not compatiple with Routes component, low priority, selected item not working properly
+              matcher={(link, location) => {
+                // debugger
+                console.log("link.destination: ", link.destination, "location.pathname: ", location.pathname);
+                return link.destination === location.pathname
+              }}
             />}
             <Routes pages={pages} />
           </QueryProvider>

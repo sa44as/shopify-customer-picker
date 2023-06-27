@@ -93,7 +93,16 @@ const configurationSchema = new Schema(
         points: {
           type: Number,
           required: true,
-          default: 1,
+          min: configurationValidation.reward_products.points_price.min,
+        },
+        shopify_customer_email: {
+          type: String,
+        },
+        shopify_customer_first_name: {
+          type: String,
+        },
+        shopify_customer_last_name: {
+          type: String,
         },
       }
     ],

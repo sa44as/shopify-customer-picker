@@ -8,7 +8,7 @@ import serveStatic from "serve-static";
 import { shopify, shopifySessionService, configurationService } from "./services/map.js";
 import { GDPRWebhookHandlers, OrdersWebhookHandlers } from "./services/shopify.service/webhookHandlers/map.js";
 import { mongoConnect } from "./config/map.js";
-import { orderRoutes, customerRoutes, configurationInternalRoutes, configurationExternalRoutes } from "./routes/map.js";
+import { orderRoutes, customerRoutes, configurationInternalRoutes, configurationExternalRoutes, shopifyRoutes } from "./routes/map.js";
 
 const mongoConnection = await mongoConnect();
 configurationService.watchNewShopExistenceAndSetupConfiguration();
@@ -78,6 +78,7 @@ app.use('/api/external/v1/configuration', configurationExternalRoutes());
 // also add a proxy rule for them in web/frontend/vite.config.js
 app.use("/api/internal/*", shopify.validateAuthenticatedSession());
 app.use('/api/internal/v1/configuration', configurationInternalRoutes());
+app.use('/api/internal/v1/shopify', shopifyRoutes());
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 

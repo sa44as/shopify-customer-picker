@@ -124,6 +124,21 @@ const configurationController = {
 
     return res.status(200).end();
   },
+  getRewardProducts: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest._id,
+      }
+    );
+
+    return res.status(200).json(
+      {
+        reward_products: response[0]?.reward_products,
+      }
+    );
+  },
   getProductPoints: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
 
@@ -144,21 +159,6 @@ const configurationController = {
       {
         product_points_exist: isProductPoints,
         product_points_configuration: productPointsConfiguration,
-      }
-    );
-  },
-  getRewardProducts: async (req, res) => {
-    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
-
-    const response = await configurationService.find(
-      {
-        shopify_session: shopifySessionFromInternalApiRequest._id,
-      }
-    );
-
-    return res.status(200).json(
-      {
-        reward_products: response[0]?.reward_products,
       }
     );
   },
@@ -274,6 +274,146 @@ const configurationController = {
     return res.status(200).json(
       {
         products_points: response[0]?.products_points,
+      }
+    );
+  },
+  getCustomerPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest._id,
+        "customers_points.shopify_customer_id": shopifySessionFromInternalApiRequest ? 'gid://shopify/Customer/' + req.params.shopify_customer_id : req.params.shopify_customer_id,
+      },
+      {
+        "customers_points.$": 1,
+      }
+    );
+
+    const isCustomerPoints = Array.isArray(response) && response.length;
+    const customerPointsConfiguration = isCustomerPoints ? response[0].customers_points.filter((customer_points) => customer_points.shopify_customer_id == shopifySessionFromInternalApiRequest ? 'gid://shopify/Customer/' + req.params.shopify_customer_id : req.params.shopify_customer_id)[0] : null;
+
+    return res.status(200).json(
+      {
+        customer_points_exist: isCustomerPoints,
+        customer_points_configuration: customerPointsConfiguration,
+      }
+    );
+  },
+  createCustomerPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const findResponse = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest?._id,
+        "customers_points.shopify_customer_id": req.body.shopifyCustomerId,
+      },
+      {
+        "customers_points.$": 1,
+      }
+    );
+
+    const isCustomerPoints = Array.isArray(findResponse) && findResponse.length;
+    const customerPointsConfiguration = isCustomerPoints ? findResponse[0].customers_points.filter((customer_points) => customer_points.shopify_customer_id == req.body.shopifyCustomerId)[0] : null;
+
+    if (isCustomerPoints) {
+      return res.status(409).json(
+        {
+          error: {
+            statusCode: 409,
+            message: "The customer points multiplier already set for this customer",
+          },
+          customer_points_exist: isCustomerPoints,
+          customer_points_configuration: customerPointsConfiguration,
+        }
+      );
+    }
+
+    const response = await configurationService.createCustomerPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        customer_points: {
+          shopify_customer_id: req.body.shopifyCustomerId,
+          points: req.body.points,
+          shopify_customer_first_name: req.body.shopifyCustomerFirstName,
+          shopify_customer_last_name: req.body.shopifyCustomerLastName,
+          shopify_customer_email: req.body.shopifyCustomerEmail,
+        },
+      }
+    );
+
+    return res.status(201).json(
+      {
+        customer_points: response,
+      }
+    );
+  },
+  editCustomerPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const findResponse = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest?._id,
+        "customers_points.shopify_customer_id": req.body.shopifyCustomerId,
+      }
+    );
+
+    const isCustomerPoints = Array.isArray(findResponse) && findResponse.length;
+    const customerPointsConfiguration = isCustomerPoints ? findResponse[0].customers_points.filter((customer_points) => customer_points.shopify_customer_id == req.body.shopifyCustomerId)[0] : null;
+
+    if (!isCustomerPoints) {
+      return res.status(400).json(
+        {
+          error: {
+            statusCode: 400,
+            message: "The customer points multipler not found",
+          },
+          is_customer_points_exist: isCustomerPoints,
+        }
+      );
+    }
+
+    const response = await configurationService.updateCustomerPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        customer_points: {
+          shopify_customer_id: req.body.shopifyCustomerId,
+          points: req.body.points,
+          shopify_metafield_id: customerPointsConfiguration.shopify_metafield.id,
+        },
+      }
+    );
+
+    return res.status(200).json(
+      {
+        customer_points: response,
+      }
+    );
+  },
+  deleteCustomerPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.deletecustomerPoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        shopify_customer_id: 'gid://shopify/Customer/' + req.params.shopify_customer_id,
+      }
+    );
+
+    return res.status(200).end();
+  },
+  getCustomersPoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest._id,
+      }
+    );
+
+    return res.status(200).json(
+      {
+        customers_points: response[0]?.customers_points,
       }
     );
   },

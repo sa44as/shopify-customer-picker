@@ -7,4 +7,6 @@ export { RewardProductsIndex } from "./RewardProductsIndex";
 export { RewardProductForm } from "./RewardProductForm";
 export { ProductsPointsIndex } from "./ProductsPointsIndex";
 export { ProductPointsForm } from "./ProductPointsForm";
+export { CustomersPointsIndex } from "./CustomersPointsIndex";
+export { CustomerPointsForm } from "./CustomerPointsForm";
 export * from "./providers";
