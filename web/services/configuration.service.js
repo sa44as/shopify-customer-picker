@@ -202,7 +202,7 @@ const getTransformedConfigurationData = (documents) => {
 
     // ignored call, because do not necessary to insert when configuration is creating on installation time
     // transformedProductsPoints = getTransformedProductsPointsData(item.products_points);
-    transformedCustomersPoints = getTransformedCustomersPointsData(item.customers_points);
+    // transformedCustomersPoints = getTransformedCustomersPointsData(item.customers_points);
     transformedDatesPoints = getTransformedDatesPointsData(item.dates_points);
 
     if (item.shopify_session__id) doc.shopify_session = item.shopify_session__id;
@@ -213,7 +213,7 @@ const getTransformedConfigurationData = (documents) => {
     if (item.default_points) doc.default_points = item.default_points;
     // ignored call, because do not necessary to insert when configuration is creating
     // if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
-    if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
+    // if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
     if (transformedDatesPoints) doc.dates_points = transformedDatesPoints;
     if (item.pre_sale_products_points) doc.pre_sale_products_points = item.pre_sale_products_points;
     if (item.gift_card_products_points) doc.gift_card_products_points = item.gift_card_products_points;
