@@ -60,7 +60,7 @@ export default function CustomersPoints() {
           image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
         >
           <p>
-            Setup customer points price multiplier.
+            Purchased product money price $1 = [multiplier] points for the selected customer.
           </p>
         </EmptyState>
       </Card>
@@ -73,7 +73,7 @@ export default function CustomersPoints() {
   return (
     <Page fullWidth={!!customersPointsMarkup}>
       <TitleBar
-        title="Customers points multipliers"
+        title="Customer points multipliers"
         primaryAction={{
           content: "Create Customer points multiplier",
           onAction: () => navigate("/customers_points/new"),

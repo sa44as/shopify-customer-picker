@@ -512,8 +512,8 @@ const getTransformedCustomerPointsData = async (customerPoints) => {
     shopify_customer_id: customerPoints.shopify_customer_id,
     points: customerPoints.points,
     shopify_customer_email: customerPoints.shopify_customer_email,
-    shopify_customer_fisrt_name: customerPoints.shopify_customer_first_name,
-    shopify_custoer_last_name: customerPoints.shopify_customer_last_name,
+    shopify_customer_first_name: customerPoints.shopify_customer_first_name,
+    shopify_customer_last_name: customerPoints.shopify_customer_last_name,
   };
 
   return transformedCustomerPoints;

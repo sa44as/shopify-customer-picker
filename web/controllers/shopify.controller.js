@@ -1,27 +1,20 @@
-import { shopify } from "../services/map.js";
+import { shopifyApiGraphql } from "../services/map.js";
 
 const shopifyController = {
   getCustomers: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
-    const requestData = {
-      session:shopifySessionFromInternalApiRequest,
-      // fields: "id,email,first_name,last_name",
+    const input = {
+      first: 50,
     };
-    if (req.params.since_id != 0) requestData.since_id = req.params.since_id;
-    if (req.params.limit != 0) requestData.limit = req.params.limit;
+    console.log("req.params.query: ", req.params.query);
+    if (req.params.first != 0) input.first = req.params.first;
+    if (req.params.query != 0) input.query = req.params.query;
+    if (req.params.after != 0) input.after = req.params.after;
 
     try {
-      // debugger
-      console.log("requestData: ", requestData);
-      const response = await shopify.api.rest.Customer.all(requestData);
+      const response = await shopifyApiGraphql.customer.get(shopifySessionFromInternalApiRequest, input);
 
-      // debugger
-      console.log("response: ", response);
-      return res.status(200).json(
-        {
-          customers: response,
-        }
-      );
+      return res.status(200).json(response?.body?.data);
     } catch (err) {
       console.log("shopifyController.getCustomers.err: ", err);
       return res.status(500);

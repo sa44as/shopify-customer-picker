@@ -359,7 +359,6 @@ const configurationController = {
     );
 
     const isCustomerPoints = Array.isArray(findResponse) && findResponse.length;
-    const customerPointsConfiguration = isCustomerPoints ? findResponse[0].customers_points.filter((customer_points) => customer_points.shopify_customer_id == req.body.shopifyCustomerId)[0] : null;
 
     if (!isCustomerPoints) {
       return res.status(400).json(
@@ -379,7 +378,6 @@ const configurationController = {
         customer_points: {
           shopify_customer_id: req.body.shopifyCustomerId,
           points: req.body.points,
-          shopify_metafield_id: customerPointsConfiguration.shopify_metafield.id,
         },
       }
     );

@@ -2,10 +2,8 @@ import { useNavigate } from "@shopify/app-bridge-react";
 import {
   Card,
   IndexTable,
-  Thumbnail,
   UnstyledLink,
 } from "@shopify/polaris";
-import { ImageMajor } from "@shopify/polaris-icons";
 
 export function CustomersPointsIndex({ customersPoints, loading }) {
   const navigate = useNavigate();
@@ -58,7 +56,7 @@ export function CustomersPointsIndex({ customersPoints, loading }) {
           { title: "First name" },
           { title: "Last name" },
           { title: "Email" },
-          { title: "Product money price $1 = [x] points multiplier for selected customer" },
+          { title: "Purchased product money price $1 = [multiplier] points for the selected customer." },
         ]}
         selectable={false}
         loading={loading}

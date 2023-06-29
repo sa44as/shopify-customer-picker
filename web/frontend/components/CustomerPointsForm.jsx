@@ -27,38 +27,23 @@ import { useForm, useField, notEmptyString, positiveIntegerString } from "@shopi
 
 export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
   const [customerPoints, setCustomerPoints] = useState(InitialCustomerPoints);
-  const [shopifyCustomers, setShopifyCustomers] = useState(null);
-  const [sinceId, setSinceId] = useState(0);
-  const [limit, setLimit] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [shopifyCustomers, setShopifyCustomers] = useState([]);
+  const [first, setFirst] = useState(10);
+  const [query, setQuery] = useState("state:'ENABLED'");
+  const [after, setAfter] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const [showResourcePicker, setShowResourcePicker] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(customerPoints);
+
   const navigate = useNavigate();
   const appBridge = useAppBridge();
   const fetch = useAuthenticatedFetch();
-
-  const {
-    getShopifyCustomers,
-    refetch: refetchShopifyCustomers,
-    isLoading: isLoadingShopifyCustomers,
-    isRefetching: isRefetchingShopifyCustomers,
-  } = useAppQuery({
-    url: "/api/internal/v1/shopify/customers/" + sinceId + "/" + limit,
-    reactQueryOptions: {
-      onSuccess: () => {
-        // debugger
-        console.log("getShopifyCustomers:", getShopifyCustomers);
-        setSinceId(getShopifyCustomers[getShopifyCustomers.length - 1]?.id);
-        setIsLoading(false);
-      },
-    },
-  });
 
   const onSubmit = useCallback(
     (body) => {
       (async () => {
         const parsedBody = body;
-        // debugger
-        // console.log("parsedBody: ", parsedBody);
         const customerPointsId = customerPoints && customerPoints.shopify_customer_id.includes("gid://") ? customerPoints.shopify_customer_id.split("/").length && customerPoints.shopify_customer_id.split("/")[customerPoints.shopify_customer_id.split("/").length - 1] : customerPoints?.shopify_customer_id;
         /* construct the appropriate URL to send the API request to based on whether the Customer points multiplier is new or being updated */
         const url = customerPointsId ? `/api/internal/v1/configuration/customer_points/${customerPointsId}` : "/api/internal/v1/configuration/customer_points";
@@ -150,19 +135,66 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
 
     Finally, closes the ResourcePicker.
   */
-  const handleCustomerChange = useCallback(({ selection }) => {
+  const handleCustomerChange = useCallback((selection) => {
+    const customerId = selection.selectedItems[0].id;
+    const customer = shopifyCustomers.filter((customer) => customer.id === customerId)[0];
     setSelectedCustomer({
-      shopify_customer_first_name: selection[0].first_name,
-      shopify_customer_last_name: selection[0].last_name,
-      shopify_customer_email: selection[0].email,
+      shopify_customer_first_name: customer.firstName,
+      shopify_customer_last_name: customer.lastName,
+      shopify_customer_email: customer.email,
     });
-    shopifyCustomerId.onChange(selection[0].id);
-    shopifyCustomerFirstName.onChange(selection[0].first_name);
-    shopifyCustomerLastName.onChange(selection[0].last_name);
-    shopifyCustomerEmail.onChange(selection[0].email);
+    shopifyCustomerId.onChange(customer.id);
+    shopifyCustomerFirstName.onChange(customer.firstName);
+    shopifyCustomerLastName.onChange(customer.lastName);
+    shopifyCustomerEmail.onChange(customer.email);
     setShowResourcePicker(false);
+  }, [shopifyCustomers]);
+
+  const handleCustomerSearch = useCallback(async (searchPayload) => {
+    if (loading) return;
+    setLoading(true);
+    const newQuery = "state:'ENABLED'" + (searchPayload.searchQuery ? " AND email:" + searchPayload.searchQuery + "*" : "");
+    setQuery(newQuery);
+    const response = await fetch("/api/internal/v1/shopify/customers/" + first + "/" + newQuery + "/" + after);
+    const getShopifyCustomers = await response.json();
+
+    const customers = Array.isArray(getShopifyCustomers?.customers?.edges) ? getShopifyCustomers.customers.edges.map((customer) => (
+      {
+        id: customer.node.id,
+        name: "Email: " + customer.node.email + " Name: " + (customer.node.firstName || "") + " " + (customer.node.lastName || ""),
+        email: customer.node.email,
+        firstName: customer.node.firstName,
+        lastName: customer.node.lastName,
+      }
+    )) : [loading];
+
+    setShopifyCustomers(customers);
+    setAfter(getShopifyCustomers.customers.pageInfo.endCursor);
+    setHasNextPage(getShopifyCustomers.customers.pageInfo.hasNextPage);
+    setLoading(false);
   }, []);
 
+  const loadMoreCustomers = useCallback(async () => {
+    if (!hasNextPage || loading) return;
+    setLoading(true);
+    const response = await fetch("/api/internal/v1/shopify/customers/" + first + "/" + query + "/" + after);
+    const getShopifyCustomers = await response.json();
+
+    const customers = Array.isArray(getShopifyCustomers?.customers?.edges) ? getShopifyCustomers.customers.edges.map((customer) => (
+      {
+        id: customer.node.id,
+        name: "Email: " + customer.node.email + " Name: " + (customer.node.firstName || "") + " " + (customer.node.lastName || ""),
+        email: customer.node.email,
+        firstName: customer.node.firstName,
+        lastName: customer.node.lastName,
+      }
+    )) : [];
+
+    setShopifyCustomers([...shopifyCustomers, ...customers]);
+    setAfter(getShopifyCustomers.customers.pageInfo.endCursor);
+    setHasNextPage(getShopifyCustomers.customers.pageInfo.hasNextPage);
+    setLoading(false);
+  }, [hasNextPage, loading, after, shopifyCustomers, query]);
 
   /*
     This function is called when a user clicks "Select customer" or cancels the CustomerPicker.
@@ -170,12 +202,30 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
     It switches between a show and hide state.
   */
   const toggleResourcePicker = useCallback(
-    () => {
-      if (showResourcePicker) {
-        // const getShopifyCustomers = 
-        // setShopifyCustomers(Array.isArray(getShopifyCustomers) || null);
+    async () => {
+      setShowResourcePicker(!showResourcePicker);
+      setLoading(true);
+      if (!showResourcePicker) {
+        setQuery("state:'ENABLED'");
+        setAfter(0);
+        const response = await fetch("/api/internal/v1/shopify/customers/" + first + "/state:'ENABLED'/0");
+        const getShopifyCustomers = await response.json();
+
+        const customers = Array.isArray(getShopifyCustomers?.customers?.edges) ? getShopifyCustomers.customers.edges.map((customer) => (
+          {
+            id: customer.node.id,
+            name: "Email: " + customer.node.email + " Name: " + (customer.node.firstName || "") + " " + (customer.node.lastName || ""),
+            email: customer.node.email,
+            firstName: customer.node.firstName,
+            lastName: customer.node.lastName,
+          }
+        )) : [];
+
+        setShopifyCustomers(customers);
+        setAfter(getShopifyCustomers.customers.pageInfo.endCursor);
+        setHasNextPage(getShopifyCustomers.customers.pageInfo.hasNextPage);
+        setLoading(false);
       }
-      setShowResourcePicker(!showResourcePicker)
     },
     [showResourcePicker]
   );
@@ -235,44 +285,36 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
                 <Card.Section>
                   {showResourcePicker && (
                     <ResourcePicker
-                      // resourceType="Product"
-                      // showVariants={false}
-                      // selectMultiple={false}
-                      // onCancel={toggleResourcePicker}
-                      // onSelection={handleCustomerChange}
-                      // open
                       open
                       items={shopifyCustomers || []}
-                      // selectedItems={/* selected items */}
-                      // title="Resource Picker"
-                      // searchQueryPlaceholder="Search Resource"
-                      // primaryActionLabel="Select"
-                      // secondaryActionLabel="Cancel"
+                      title="Select Customer"
+                      searchQueryPlaceholder="Search Customer by Email address"
                       emptySearchLabel={
                         {
-                          title: 'No resources',
-                          description: 'There are no resources to display',
+                          title: 'Customer not found',
+                          description: 'There are no customer to display',
                           withIllustration: true,
                         }
                       }
                       onCancel={toggleResourcePicker}
-                      onSelect={handleCustomerChange}
-                      // onSearch={/* search even handler */}
-                      // onLoadMore={/* load more even handler */}
-
+                      onSelect={(selectPayload) => handleCustomerChange(selectPayload)}
+                      onSearch={(searchPayload) => handleCustomerSearch(searchPayload)}
+                      onLoadMore={loadMoreCustomers}
                       maxSelectable={1}
+                      canLoadMore={hasNextPage}
+                      loading={loading}
                     />
                   )}
                   {shopifyCustomerId.value ? (
                     <Stack alignment="center">
                       <TextStyle variation="strong">
+                        {selectedCustomer?.shopify_customer_email}
+                      </TextStyle>
+                      <TextStyle variation="strong">
                         {selectedCustomer?.shopify_customer_first_name}
                       </TextStyle>
                       <TextStyle variation="strong">
                         {selectedCustomer?.shopify_customer_last_name}
-                      </TextStyle>
-                      <TextStyle variation="strong">
-                        {selectedCustomer?.shopify_customer_email}
                       </TextStyle>
                     </Stack>
                   ) : (
@@ -292,7 +334,7 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
                   )}
                 </Card.Section>
               </Card>
-              <Card sectioned title="Product money price $1 = [x] points price multiplier for selected customer">
+              <Card sectioned title="Purchased product money price $1 = [multiplier] points for the selected customer.">
                 <TextField
                   {...points}
                   type="number"

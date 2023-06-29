@@ -3,7 +3,7 @@ import { TitleBar } from "@shopify/app-bridge-react";
 import { RewardProductForm } from "../../components";
 
 export default function ManageRewardProduct() {
-  const breadcrumbs = [{ content: "Reward products", url: "/" }];
+  const breadcrumbs = [{ content: "Reward products", url: "/reward_products" }];
 
   return (
     <Page>

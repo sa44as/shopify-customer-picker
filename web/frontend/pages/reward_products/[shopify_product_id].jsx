@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useAppQuery } from "../../hooks";
 
 export default function RewardProductEdit() {
-  const breadcrumbs = [{ content: "Reward products", url: "/" }];
+  const breadcrumbs = [{ content: "Reward products", url: "/reward_products" }];
 
   const { shopify_product_id } = useParams();
 

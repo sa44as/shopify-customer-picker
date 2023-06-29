@@ -31,7 +31,7 @@ export default function ProductPointsEdit() {
     return (
       <Page>
         <TitleBar
-          title="Edit Product money price $1 = [x] points price multiplier"
+          title="Edit Product points multiplier"
           breadcrumbs={breadcrumbs}
           primaryAction={null}
         />
@@ -57,7 +57,7 @@ export default function ProductPointsEdit() {
   return (
     <Page>
       <TitleBar
-        title="Edit Product money price $1 = [x] points price multiplier"
+        title="Edit Product points multiplier"
         breadcrumbs={breadcrumbs}
         primaryAction={null}
       />
