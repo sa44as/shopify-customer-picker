@@ -59,13 +59,13 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
             //     points: 2,
             //   },
             // ],
-            // CRUD to do, should be like reward_products, URLs = /customers_points and /customers_points/[shopify_customer_id]
-            customers_points: [
-              {
-                shopify_customer_id: "115310627314723950",
-                points: 3,
-              },
-            ],
+            // CRUD done, that's why commented, should be like reward_products, URLs = /customers_points and /customers_points/[shopify_customer_id]
+            // customers_points: [
+            //   {
+            //     shopify_customer_id: "115310627314723950",
+            //     points: 3,
+            //   },
+            // ],
             // CRUD to do, should be 3 inputs = FROM (date), TO (date), POINTS (number), URLs = /dates_points and /dates_points/[date_objectID]
             dates_points: [
               datesPoints,
