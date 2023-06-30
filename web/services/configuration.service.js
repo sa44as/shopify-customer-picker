@@ -128,28 +128,29 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
 //   return transformedProductsPoints.length ? transformedProductsPoints : null;
 // }
 
-const getTransformedCustomersPointsData = (customersPoints) => {
-  const isCustomersPointsDataValid = Array.isArray(customersPoints) && customersPoints.length;
-  if (!isCustomersPointsDataValid) return null;
+// ignored call after completion the CRUD system, do not necessary when configuration is creating on installation time
+// const getTransformedCustomersPointsData = (customersPoints) => {
+//   const isCustomersPointsDataValid = Array.isArray(customersPoints) && customersPoints.length;
+//   if (!isCustomersPointsDataValid) return null;
 
-  let transformedCustomersPoints = [];
+//   let transformedCustomersPoints = [];
 
-  let isCustomerPointsDataValid, transformedCustomerPoints;
-  for (const customerPoints of customersPoints) {
-    isCustomerPointsDataValid = customerPoints.shopify_customer_id && customerPoints.points;
-    if (!isCustomerPointsDataValid) continue;
+//   let isCustomerPointsDataValid, transformedCustomerPoints;
+//   for (const customerPoints of customersPoints) {
+//     isCustomerPointsDataValid = customerPoints.shopify_customer_id && customerPoints.points;
+//     if (!isCustomerPointsDataValid) continue;
 
-    isCustomerPointsDataValid = false;
-    transformedCustomerPoints = {};
+//     isCustomerPointsDataValid = false;
+//     transformedCustomerPoints = {};
 
-    transformedCustomerPoints.shopify_customer_id = customerPoints.shopify_customer_id;
-    transformedCustomerPoints.points = customerPoints.points;
+//     transformedCustomerPoints.shopify_customer_id = customerPoints.shopify_customer_id;
+//     transformedCustomerPoints.points = customerPoints.points;
 
-    transformedCustomersPoints = [...transformedCustomersPoints, transformedCustomerPoints];
-  }
+//     transformedCustomersPoints = [...transformedCustomersPoints, transformedCustomerPoints];
+//   }
 
-  return transformedCustomersPoints.length ? transformedCustomersPoints : null;
-}
+//   return transformedCustomersPoints.length ? transformedCustomersPoints : null;
+// }
 
 const getTransformedDatesPointsData = (datesPoints) => {
   const isDatesPointsDataValid = Array.isArray(datesPoints) && datesPoints.length;

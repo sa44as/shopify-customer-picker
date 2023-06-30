@@ -61,6 +61,7 @@ const configurationSchema = new Schema(
     default_points: {
       type: Number,
       required: true,
+      min: configurationValidation.reward_products.points_price.min,
       default: 1,
     },
     products_points: [
@@ -119,18 +120,20 @@ const configurationSchema = new Schema(
         points: {
           type: Number,
           required: true,
-          default: 1,
+          min: configurationValidation.reward_products.points_price.min,
         },
       }
     ],
     pre_sale_products_points: {
       type: Number,
       required: true,
+      min: configurationValidation.reward_products.points_price.min,
       default: 1,
     },
     gift_card_products_points: {
       type: Number,
       required: true,
+      min: configurationValidation.reward_products.points_price.min,
       default: 1,
     },
   },
