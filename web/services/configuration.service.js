@@ -14,13 +14,13 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
         const currentDate = new Date();
         const tomorrowDate = new Date(currentDate);
         tomorrowDate.setDate(currentDate.getDate() + 1);
-        console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
+        // console.log('currentDate: ', currentDate, 'tomorrowDate: ', tomorrowDate);
         const datesPoints = {
           from: currentDate,
           to: tomorrowDate,
           points: 10,
         };
-        console.log('datesPoints: ', datesPoints);
+        // console.log('datesPoints: ', datesPoints);
         // end of is set for test
 
         const documents = [

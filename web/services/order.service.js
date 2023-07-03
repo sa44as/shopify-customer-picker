@@ -198,6 +198,11 @@ const getCustomerPointsBalance = async (shopify_session__id, shopify_customer_id
   );
 
   const pointsBalance = response?.points_balance?.[0]?.points_balance || 0;
+
+  const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, order.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
+  // debugger
+  console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
+
   return pointsBalance;
 }
 
@@ -228,12 +233,9 @@ const create = async (shop, documents) => {
 
   try {
     const res = await orderModel.create(transformedOrderData);
-    // update customer balance
     for (const order of transformedOrderData) {
+      // get customer fresh balance and create or update Shopify metafield
       const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, order.shopify_customer_id);
-      const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, order.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
-      // debugger
-      console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
     }
 
     return res;
