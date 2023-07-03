@@ -217,7 +217,7 @@ const create = async (shop, documents) => {
 
   const transformedOrderData = await getTransformedOrderData(shopifySession, documents);
   // debugger
-  // console.log('transformedOrderData: ', transformedOrderData);
+  console.log('transformedOrderData: ', transformedOrderData);
 
   if (!transformedOrderData) {
     return {
