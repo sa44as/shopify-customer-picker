@@ -45,7 +45,7 @@ const corsOptions = async (req, callback) => {
       shop: origin.replace(/(^\w+:|^)\/\//, ''),
     },
   );
-  
+
   if (shopifySessions.length < 1) {
     return callback(
       {

@@ -2,7 +2,7 @@ import { configurationService } from "../services/map.js";
 
 const configurationController = {
   isRewardProduct: async (req, res) => {
-    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+    const shopifySessionFromInternalApiRequest = res.locals?.shopify?.session;
     const response = await configurationService.find(
       {
         shopify_session: shopifySessionFromInternalApiRequest?._id || req.shopifySession._id,
