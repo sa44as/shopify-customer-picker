@@ -25,7 +25,7 @@ const customerController = {
 
     return res.status(200).json(
       {
-        points_balance: pointsBalance,
+        points_balance: pointsBalance || 0,
       }
     );
   },
