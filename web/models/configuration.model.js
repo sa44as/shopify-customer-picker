@@ -4,7 +4,7 @@ const configurationValidation = {
   reward_products: {
     points_price: {
       min: [
-        10,
+        1,
         'The value of path `{PATH}` ({VALUE}) is beneath the limit ({MIN}).'
       ],
     },
@@ -61,7 +61,6 @@ const configurationSchema = new Schema(
     default_points: {
       type: Number,
       required: true,
-      min: configurationValidation.reward_products.points_price.min,
       default: 1,
     },
     products_points: [

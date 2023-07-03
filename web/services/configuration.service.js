@@ -211,7 +211,7 @@ const getTransformedConfigurationData = (documents) => {
     if (item.state) doc.state = item.state;
     // ignored call, because do not necessary to insert when configuration is creating
     // if (item.reward_products) doc.reward_products = item.reward_products;
-    if (item.default_points) doc.default_points = item.default_points;
+    // if (item.default_points) doc.default_points = item.default_points;
     // ignored call, because do not necessary to insert when configuration is creating
     // if (transformedProductsPoints) doc.products_points = transformedProductsPoints;
     // if (transformedCustomersPoints) doc.customers_points = transformedCustomersPoints;
