@@ -183,7 +183,7 @@ const getCustomerPointsBalance = async (shopify_session__id, shopify_customer_id
       {
         $match: {
           shopify_session: shopify_session__id,
-          shopify_customer_id: shopify_customer_id,
+          shopify_customer_id: String(shopify_customer_id),
         }
       },
       {
