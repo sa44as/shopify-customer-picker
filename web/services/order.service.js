@@ -177,12 +177,12 @@ const getTransformedOrderData = async (shopifySession, documents) => {
   return transformedData.length ? transformedData : null;
 }
 
-const getCustomerPointsBalance = async (shopify_session__id, shopify_customer_id) => {
+const getCustomerPointsBalance = async (shopifySession, shopify_customer_id) => {
   const response = await aggregate(
     [
       {
         $match: {
-          shopify_session: shopify_session__id,
+          shopify_session: shopifySession._id,
           shopify_customer_id: String(shopify_customer_id),
         }
       },
@@ -235,7 +235,7 @@ const create = async (shop, documents) => {
     const res = await orderModel.create(transformedOrderData);
     for (const order of transformedOrderData) {
       // get customer fresh balance and create or update Shopify metafield
-      const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, order.shopify_customer_id);
+      await getCustomerPointsBalance(shopifySession, order.shopify_customer_id);
     }
 
     return res;
