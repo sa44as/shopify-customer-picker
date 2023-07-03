@@ -67,13 +67,13 @@ const watchNewShopExistenceAndSetupConfiguration = () => {
             //   },
             // ],
             // CRUD to do, should be 3 inputs = FROM (date), TO (date), POINTS (number), URLs = /dates_points and /dates_points/[date_objectID]
-            dates_points: [
-              datesPoints,
-            ],
+            // dates_points: [
+            //   datesPoints,
+            // ],
             // CRUD to do, should be one input = POINTS (number)
-            pre_sale_products_points: 20,
+            // pre_sale_products_points: 20,
             // CRUD to do, should be one input = POINTS (number)
-            gift_card_products_points: 30,
+            // gift_card_products_points: 30,
             // end of is set for test
           }
         ];
