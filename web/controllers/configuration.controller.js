@@ -391,7 +391,7 @@ const configurationController = {
   deleteCustomerPoints: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
 
-    const response = await configurationService.deletecustomerPoints(
+    const response = await configurationService.deleteCustomerPoints(
       {
         shopify_session: shopifySessionFromInternalApiRequest,
         shopify_customer_id: 'gid://shopify/Customer/' + req.params.shopify_customer_id,
