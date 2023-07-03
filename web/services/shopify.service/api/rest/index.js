@@ -84,6 +84,29 @@ const shopifyApiRest = {
       },
     },
   },
+  customer: {
+    metafield: {
+      create_or_update: async (session, customerId, namespace, key, value, type) => {
+        try {
+          const metafield = new shopify.api.rest.Metafield({session});
+          metafield.customer_id = customerId.includes("gid://") ? customerId.split("/").length && customerId.split("/")[customerId.split("/").length - 1] : customerId;
+          metafield.namespace = namespace;
+          metafield.key = key;
+          metafield.value = type === "json" ? JSON.stringify(value) : value;
+          metafield.type = type;
+          await metafield.save(
+            {
+              update: true,
+            }
+          );
+          return metafield;
+        } catch (err) {
+          console.log("shopifyApiRest.customer.metafield.create_or_update.err: ", err);
+          return null;
+        }
+      },
+    },
+  },
   // not used in project, can be necessary for the furter development, leaving here
   createPriceRule: async (session, customerId, productId) => {
     try {

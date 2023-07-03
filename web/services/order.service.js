@@ -177,6 +177,30 @@ const getTransformedOrderData = async (shopifySession, documents) => {
   return transformedData.length ? transformedData : null;
 }
 
+const getCustomerPointsBalance = async (shopify_session__id, shopify_cusomer_id) => {
+  const response = await aggregate(
+    [
+      {
+        $match: {
+          shopify_session: shopify_session__id,
+          shopify_customer_id: shopify_cusomer_id,
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          points_balance: {
+            $sum: "$points"
+          }
+        }
+      }
+    ]
+  );
+
+  const pointsBalance = response?.points_balance?.[0]?.points_balance || 0;
+  return pointsBalance;
+}
+
 const create = async (shop, documents) => {
   const getShopifySession = await shopifySessionService.find(
     {
@@ -192,13 +216,22 @@ const create = async (shop, documents) => {
   const shopifySession = getShopifySession[0];
 
   const transformedOrderData = await getTransformedOrderData(shopifySession, documents);
-  console.log('transformedOrderData: ', transformedOrderData);
+  // debugger
+  // console.log('transformedOrderData: ', transformedOrderData);
+
   if (!transformedOrderData) {
     return {
       error: true,
       message: 'Error while creating Order, the provided data is not correct.',
     };
   }
+
+  // update customer balance
+  const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, transformedOrderData.shopify_customer_id);
+  await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "reward_points", metafieldValue, "json");
+  const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, transformedOrderData.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
+  // debugger
+  console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
 
   try {
     const res = await orderModel.create(transformedOrderData);
@@ -238,7 +271,7 @@ const aggregate = async (pipeline) => {
 const orderService = {
   create,
   find,
-  aggregate,
+  getCustomerPointsBalance,
 }
 
 export { orderService }
