@@ -229,10 +229,13 @@ const create = async (shop, documents) => {
   try {
     const res = await orderModel.create(transformedOrderData);
     // update customer balance
-    const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, transformedOrderData.shopify_customer_id);
-    const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, transformedOrderData.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
-    // debugger
-    console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
+    for (const order of transformedOrderData) {
+      const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, order.shopify_customer_id);
+      const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, order.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
+      // debugger
+      console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
+    }
+
     return res;
   } catch (err) {
     return {
