@@ -89,7 +89,7 @@ const shopifyApiRest = {
       create_or_update: async (session, customerId, namespace, key, value, type) => {
         try {
           const metafield = new shopify.api.rest.Metafield({session});
-          metafield.customer_id = customerId.includes("gid://") ? customerId.split("/").length && customerId.split("/")[customerId.split("/").length - 1] : customerId;
+          metafield.customer_id = typeof customerId === "string" && customerId.includes("gid://") ? customerId.split("/").length && customerId.split("/")[customerId.split("/").length - 1] : customerId;
           metafield.namespace = namespace;
           metafield.key = key;
           metafield.value = type === "json" ? JSON.stringify(value) : value;
