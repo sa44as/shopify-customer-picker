@@ -228,7 +228,6 @@ const create = async (shop, documents) => {
 
   // update customer balance
   const customerPointsBalance = await getCustomerPointsBalance(shopifySession._id, transformedOrderData.shopify_customer_id);
-  await shopifyApiRest.product.metafield.create(shopify_session, rewardProduct.shopify_product_id, "loyalty_program", "reward_points", metafieldValue, "json");
   const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, transformedOrderData.shopify_customer_id, "loyalty_program", "reward_points", customerPointsBalance, "number_decimal");
   // debugger
   console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
