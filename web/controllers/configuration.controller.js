@@ -6,7 +6,7 @@ const configurationController = {
     const response = await configurationService.find(
       {
         shopify_session: shopifySessionFromInternalApiRequest?._id || req.shopifySession._id,
-        "reward_products.shopify_product_id": shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id,
+        "reward_products.shopify_product_id": 'gid://shopify/Product/' + req.params.shopify_product_id,
       },
       {
         "reward_products.$": 1,
