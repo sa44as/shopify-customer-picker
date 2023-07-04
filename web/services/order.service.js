@@ -18,6 +18,8 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const shopifyProduct = await shopifyApiRest.product.get(shopifySession, shopifyProductId);
   const isShopifyProductfound = shopifyProduct && Array.isArray(shopifyProduct.variants);
   if (isShopifyLineItemPurchasedWithPoints && isShopifyProductfound) {
+// debugger
+console.log("shopifyProductId: ", shopifyProductId);
     let getRewardProductConfiguration = configuration.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id == shopifyProductId);
     let isRewardProductConfigurationFound = getRewardProductConfiguration.length;
     if (!isRewardProductConfigurationFound) {
