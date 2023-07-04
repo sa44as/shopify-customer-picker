@@ -4,7 +4,7 @@ import { shopifyApiRest, shopifyApiGraphql } from "./map.js";
 const watchNewShopExistenceAndSetupConfiguration = () => {
   shopifySessionModel.watch().on('change', async (data) => {
     // debugger
-    // console.log('data.operationType: ', data.operationType);
+    console.log('data.operationType: ', data.operationType);
     switch (data.operationType) {
       case 'insert':
         const shopifySession = data.fullDocument;
