@@ -197,9 +197,7 @@ const getCustomerPointsBalance = async (shopifySession, shopify_customer_id) => 
     ]
   );
 
-  const pointsBalance = response?.points_balance?.[0]?.points_balance || 0;
-// debugger
-console.log("response pointsBalance: ", response);
+  const pointsBalance = response?[0]?.points_balance || 0;
   const createOrUpdateShopifyCustomerMetafieldResponse = await shopifyApiRest.customer.metafield.create_or_update(shopifySession, shopify_customer_id, "loyalty_program", "reward_points", pointsBalance, "number_decimal");
   // debugger
   console.log("createOrUpdateShopifyCustomerMetafieldResponse:", createOrUpdateShopifyCustomerMetafieldResponse);
