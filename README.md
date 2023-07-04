@@ -284,6 +284,7 @@ Description: Check if the product is a reward product, this is necessary to be u
 Before going to checkout you need to detect in-cart reward products,…??? need to decide after having integrated with add-to-cart level low priority
 Note: The product that needs to be reward product needs to have a high money price to avoid wrong orders caused by any technical issue if something will go not as expected.
 Note: For rendering the reward products on grid views or on the product page, you can check the product metafield with Namespace: loyalty_program, and Key: configuration, and if the product will have that metafield it means the product is a reward and you can get the product price with points from the metafield points_price property value.
+Note: This Endpoint needs to be used with /api/external/v1/customer/points_balance/:shopify_customer_id endpoint.
 Do not use the metafield information for adding products to the cart or before going to checkout.
 
 Internal routes
@@ -323,7 +324,7 @@ External routes
 Route: /external/v1/customer
 Description: Used for integration with the shop.
 
-Endpoint: GET /points_balance/:shopify_customer_id (final review necessary)
+Endpoint: GET /points_balance/:shopify_customer_id
 
 Query parameters:
 shopify_customer_id  is required
@@ -354,6 +355,67 @@ shopify_product_id is required
 
 Description: Run before adding to the cart for making sure the customer has enough balance to buy that product with points and the product is a reward product, in other words, make sure everything is correct before moving forward to add the product to the cart because the discount is adding by checking Shopify metafields which is accessible for manual change.
 
+
+
+Help for integrastion with the shop
+
+The below codes can be helpful for integration with the shop, these are just developer tested API calls with the test data directly in the theme.liquid file, just you need to use them at the correct time and under the correct conditions.
+
+HTML:
+<button id="apiCallOrdersBtn" style="position: fixed; top:0; left:0; padding-top: 100px">API CALL Orders</button>
+<button id="apiCallCustomerPointsBalanceBtn" style="position: fixed; top:0; left:200px; padding-top: 100px">API CALL CustomerPointsBalance</button>
+<button id="apiCallProductIsRewardBtn" style="position: fixed; top:0; left:400px; padding-top: 100px">API CALL ProductIsReward</button>
+<button id="apiCallBeforeAddToCartBtn" style="position: fixed; top:0; left: 100px; padding-top:100px">API CALL BeforeAddToCart</button>
+
+JS:
+<script>
+  const apiCallOrders = async () => {
+    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/order/{{ http://customer.id  }}');
+
+const json = await response.json();
+
+console.log(JSON.stringify(json));
+
+  }
+  const apiCallOrdersBtn = document.querySelector('#apiCallOrdersBtn');
+  apiCallOrdersBtn.onclick = apiCallOrders;
+
+  const apiCallBeforeAddToCart = async () => {
+    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/order/before_add_to_cart/{{ http://customer.id  }}/7489095598319');
+
+const json = await response.json();
+
+console.log(JSON.stringify(json));
+
+  }
+  const apiCallBeforeAddToCartBtn = document.querySelector('#apiCallBeforeAddToCartBtn');
+  apiCallBeforeAddToCartBtn.onclick = apiCallBeforeAddToCart;
+
+  const apiCallCustomerPointsBalance = async () => {
+    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/{{ http://customer.id  }}');
+
+const json = await response.json();
+
+console.log(JSON.stringify(json));
+return json;
+
+  }
+  const apiCallCustomerPointsBalanceBtn = document.querySelector('#apiCallCustomerPointsBalanceBtn');
+  apiCallCustomerPointsBalanceBtn.onclick = apiCallCustomerPointsBalance;
+
+ const apiCallProductIsReward = async () => {
+    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/{{ product.id }}');
+
+const json = await response.json();
+
+console.log(JSON.stringify(json));
+return json;
+
+  }
+  const apiCallProductIsRewardBtn = document.querySelector('#apiCallProductIsRewardBtn');
+  apiCallProductIsRewardBtn.onclick = apiCallProductIsReward;
+</script>
+
 Completed TO DOS
 
 1. Install the app in the staging environment after discussion with the integration team, I need to provide a development store to the integration team, where they need to install the Stax 2.0 theme latest version, parallelly I will install the app staging environment to the same development store. - DONE
@@ -367,9 +429,11 @@ c) Individual customers [customer input] $1 = [number input] points - CRUD is do
 g) Reward products [product input] points price [number input] points - CRUD is done
 h) Navigation, pages, and routes - are done
 
+5. Final review for double-checking, optimizing, and finalizing all things that are necessary for integration with the shop - Done
+
 TO DOS
 
-1. Integration with SHOP using the above-mentioned API endpoints and the Product and Customer Shopify metafield values and in Cart existing products data to compare things and understand if the Customer balance - in cart reward product points * in cart reward product quantity >= New product adding to cart when the customer clicks to the Buy with points button. - IN PROGRESS by integration team
+1. Integration with SHOP using the above-mentioned API endpoints and the Product and Customer Shopify metafield values and in Cart existing products data to compare things and understand if the Customer balance - in cart reward product points * in cart reward product quantity >= New product adding to cart when the customer clicks to the Buy with points button. - IN PROGRESS by the integration team
 
 3.  Admin interface Configuration:
 a) Entire store $1  = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
@@ -378,5 +442,4 @@ e) Pre Sale product $1 = [number input] points (low priority - because the backe
 f) Gift Card $1 = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
 
 4. ) Many internal API endpoints documentation are not documented and have very low priority, possibly also not necessary.
-
-5) Final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop - In progress
+   
