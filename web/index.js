@@ -40,6 +40,17 @@ app.post(
 
 const corsOptions = async (req, callback) => {
   const origin = req.get('origin');
+  if (typeof origin != "string") {
+    return callback(
+      {
+        err: 'CORS is disabled for request from origin: ' + origin
+      },
+      {
+        origin: origin
+      }
+    );
+  }
+
   const shopifySessions = await shopifySessionService.find(
     {
       shop: origin.replace(/(^\w+:|^)\/\//, ''),
