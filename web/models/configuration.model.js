@@ -69,7 +69,8 @@ const configurationSchema = new Schema(
         shopify_product_id: {
           type: String,
           required: true,
-          // unique: true,
+          unique: true,
+          sparse: true,
         },
         shopify_product_title: {
           type: String,
