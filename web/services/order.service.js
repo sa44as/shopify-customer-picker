@@ -18,8 +18,6 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const shopifyProduct = await shopifyApiRest.product.get(shopifySession, shopifyProductId);
   const isShopifyProductfound = shopifyProduct && Array.isArray(shopifyProduct.variants);
   if (isShopifyLineItemPurchasedWithPoints && isShopifyProductfound) {
-// debugger
-console.log("shopifyProductId: ", shopifyProductId);
     let getRewardProductConfiguration = configuration.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id == "gid://shopify/Product/" + shopifyProductId);
     let isRewardProductConfigurationFound = getRewardProductConfiguration.length;
     if (!isRewardProductConfigurationFound) {
@@ -29,11 +27,9 @@ console.log("shopifyProductId: ", shopifyProductId);
     let rewardProductConfiguration = isRewardProductConfigurationFound ? getRewardProductConfiguration[0] : null;
     let pointsPriceFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.points_price : null;
     let shopifyMetafieldIdFromConfiguration = isRewardProductConfigurationFound ? rewardProductConfiguration.shopify_metafield.id : null;
-// debugger
-console.log("rewardProductConfiguration:", rewardProductConfiguration);
+
     let getRewardProductConfigurationFromShopifyProductMetafield = await shopifyApiRest.product.metafield.get(shopifySession, shopifyProductId, shopifyMetafieldIdFromConfiguration);
-    // debugger
-    console.log("getRewardProductConfigurationFromShopifyProductMetafield: ", getRewardProductConfigurationFromShopifyProductMetafield);
+
     let isRewardProductConfigurationFromShopifyProductMetafieldFound = getRewardProductConfigurationFromShopifyProductMetafield && getRewardProductConfigurationFromShopifyProductMetafield.id && getRewardProductConfigurationFromShopifyProductMetafield.namespace === "loyalty_program" && getRewardProductConfigurationFromShopifyProductMetafield.key === "configuration";
     if (!isRewardProductConfigurationFromShopifyProductMetafieldFound) {
       console.log('Unexpected error: The product not found in Shopify as reward product, but seems it has been purchased with points, possible reason is configuration was changed pararelly with the current order or the product metafield has been changed manually so continuing logic as reward product and minus customer reward points.');
