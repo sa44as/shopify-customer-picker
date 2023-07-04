@@ -262,7 +262,28 @@ Deploy
 1. Internal database is MongoDB hosted on DigitalOcean and working on the project with Mongoose.
 2. The server is droplet hosted on DigitalOcean.
 3. the backend project is deployed with pm2.
+
+Delete old process and logs:
+
+pm2 flush API
+pm2 delete API
+
+Run application:
+
+cd web
+pm2 start ecosystem.config.cjs --env production
+
+Restart to add timestamp in logs:
+
+pm2 restart API --time
+
+View logs:
+
+pm2 logs API --lines 1000
+
 4. The frontend needs to build for deployment as described here https://github.com/Stax-LTD/loyalty-program#build 
+
+
 
 API
 API URL: loyalty-program.bnsystems.org/api
