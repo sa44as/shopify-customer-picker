@@ -227,6 +227,8 @@ const getTransformedConfigurationData = (documents) => {
 
 const create = async (documents) => {
   const transformedConfigurationData = getTransformedConfigurationData(documents);
+// debugger
+console.log("transformedConfigurationData: ", transformedConfigurationData);
   if (!transformedConfigurationData) {
     return {
       error: true,
