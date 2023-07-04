@@ -39,7 +39,7 @@ console.log("rewardProductConfiguration:", rewardProductConfiguration);
       console.log('Unexpected error: The product not found in Shopify as reward product, but seems it has been purchased with points, possible reason is configuration was changed pararelly with the current order or the product metafield has been changed manually so continuing logic as reward product and minus customer reward points.');
     }
 
-    let rewardProductConfigurationFromShopifyProductMetafield = getRewardProductConfigurationFromShopifyProductMetafield;
+    let rewardProductConfigurationFromShopifyProductMetafield = JSON.parse(getRewardProductConfigurationFromShopifyProductMetafield.value);
 
     if (rewardProductConfigurationFromShopifyProductMetafield?.points_price != pointsPriceFromConfiguration) {
       console.log('Unexpected error: rewardProductConfiguration points prices are not equal when comparing internal mongo db info with info from shopify, possible reason is metafield has been changed manually.');
