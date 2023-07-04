@@ -108,8 +108,8 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
     isShopifyLineItemDataValid = false;
     isShopifyLineItemPurchasedWithPoints = Array.isArray(shopifyLineItem.shopify_properties) &&
       shopifyLineItem.shopify_properties.length &&
-      // to do, shopifyProperty not using need to review and exclude
-      shopifyLineItem.shopify_properties.filter((shopifyProperty) => shopifyProperty.name === "Buy with" && shopifyProperty.value === "points") &&
+      // below line canbe nexessary in the future when product type will appear that can be sell also with money
+      // shopifyLineItem.shopify_properties.filter((shopifyProperty) => shopifyProperty.name === "Buy with" && shopifyProperty.value === "points") &&
       Array.isArray(shopifyLineItem.shopify_discount_allocations) &&
       shopifyLineItem.shopify_discount_allocations.length &&
       shopifyLineItem.shopify_discount_allocations.filter((discountAllocation) => discountAllocation.amount - shopifyLineItem.shopify_quantity * shopifyLineItem.shopify_price === 0).length;
