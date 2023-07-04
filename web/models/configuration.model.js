@@ -33,6 +33,7 @@ const configurationSchema = new Schema(
           type: String,
           required: true,
           unique: true,
+          sparse: true,
         },
         shopify_product_title: {
           type: String,
