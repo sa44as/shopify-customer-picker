@@ -1,4 +1,4 @@
-import { configurationService } from "../services/map.js";
+import { configurationService, shopifyApiRest } from "../services/map.js";
 
 const configurationController = {
   isRewardProduct: async (req, res) => {
@@ -15,7 +15,16 @@ const configurationController = {
 
     const isRewardProduct = Array.isArray(response) && response.length;
     const rewardProductConfiguration = isRewardProduct ? response[0].reward_products.filter((reward_product) => reward_product.shopify_product_id == shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id)[0] : null;
-    // to do, low priority, here also can be run metafield corrector function that also need to be created in case if metafield value is not equal
+    if (isRewardProduct && rewardProductConfiguration.shopify_product_id) {
+      let metafieldValue = {
+        points_price: rewardProductConfiguration.points,
+      };
+
+      let createOrUpdateProductMetafieldResponse = await shopifyApiRest.product.metafield.create(shopifySessionFromInternalApiRequest?._id || req.shopifySession._id, rewardProductConfiguration.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
+      // debugger
+      console.log("createOrUpdateProductMetafieldResponse: ", createOrUpdateProductMetafieldResponse);
+    }
+
     return res.status(200).json(
       {
         is_reward_product: isRewardProduct,
