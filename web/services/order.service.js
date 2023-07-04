@@ -106,13 +106,13 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
     if (!isShopifyLineItemDataValid) continue;
 
     isShopifyLineItemDataValid = false;
-    isShopifyLineItemPurchasedWithPoints = Array.isArray(shopifyLineItem.shopify_properties) &&
-      shopifyLineItem.shopify_properties.length &&
-      // below line canbe nexessary in the future when product type will appear that can be sell also with money
-      // shopifyLineItem.shopify_properties.filter((shopifyProperty) => shopifyProperty.name === "Buy with" && shopifyProperty.value === "points") &&
-      Array.isArray(shopifyLineItem.shopify_discount_allocations) &&
-      shopifyLineItem.shopify_discount_allocations.length &&
-      shopifyLineItem.shopify_discount_allocations.filter((discountAllocation) => discountAllocation.amount - shopifyLineItem.shopify_quantity * shopifyLineItem.shopify_price === 0).length;
+    isShopifyLineItemPurchasedWithPoints = Array.isArray(shopifyLineItem.shopify_discount_allocations) &&
+    shopifyLineItem.shopify_discount_allocations.length &&
+    shopifyLineItem.shopify_discount_allocations.filter((discountAllocation) => discountAllocation.amount - shopifyLineItem.shopify_quantity * shopifyLineItem.shopify_price === 0).length;
+    // Array.isArray(shopifyLineItem.shopify_properties) &&
+    // shopifyLineItem.shopify_properties.length &&
+    // below lines can be nexessary in the future when product type will appear that can be sell also with money
+    // shopifyLineItem.shopify_properties.filter((shopifyProperty) => shopifyProperty.name === "Buy with" && shopifyProperty.value === "points") &&
     transformedShopifyLineItem = {};
 
     calculatedLineItemPoints = await getCalculatedLineItemPoints(shopifySession, configuration, shopifyCustomerId, shopifyLineItem.shopify_product_id, shopifyLineItem.shopify_variant_id, shopifyLineItem.shopify_quantity, shopifyLineItem.shopify_price, isShopifyLineItemPurchasedWithPoints);
