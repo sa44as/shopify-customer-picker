@@ -20,7 +20,7 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   if (isShopifyLineItemPurchasedWithPoints && isShopifyProductfound) {
 // debugger
 console.log("shopifyProductId: ", shopifyProductId);
-    let getRewardProductConfiguration = configuration.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id == shopifyProductId);
+    let getRewardProductConfiguration = configuration.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id == "gid://shopify/Product/" + shopifyProductId);
     let isRewardProductConfigurationFound = getRewardProductConfiguration.length;
     if (!isRewardProductConfigurationFound) {
       console.log('Unexpected error: The product not found in internal mongoDB database as reward product, but seems it has been purchased with points, possible reason is configuration was changed pararelly with the current order so continuing logic as reward product and minus customer reward points.');
