@@ -20,7 +20,7 @@ const shopifyApiRest = {
       create: async (session, productId, namespace, key, value, type) => {
         try {
           const metafield = new shopify.api.rest.Metafield({session});
-          metafield.product_id = productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
+          metafield.product_id = typeof productId === "string" && productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
           metafield.namespace = namespace;
           metafield.key = key;
           metafield.value = type === "json" ? JSON.stringify(value) : value;
@@ -39,7 +39,7 @@ const shopifyApiRest = {
       update: async (session, productId, id, value, type) => {
         try {
           const metafield = new shopify.api.rest.Metafield({session});
-          metafield.product_id = productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
+          metafield.product_id = typeof productId === "string" && productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId;
           metafield.id = id;
           metafield.value = type === "json" ? JSON.stringify(value) : value;
           metafield.type = type;
@@ -57,7 +57,7 @@ const shopifyApiRest = {
           const response = await shopify.api.rest.Metafield.find(
             {
               session,
-              product_id: productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
+              product_id: typeof productId === "string" && productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
               id,
             }
           );
@@ -72,7 +72,7 @@ const shopifyApiRest = {
           await shopify.api.rest.Metafield.delete(
             {
               session,
-              product_id: productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
+              product_id: typeof productId === "string" && productId.includes("gid://") ? productId.split("/").length && productId.split("/")[productId.split("/").length - 1] : productId,
               id,
             }
           );
