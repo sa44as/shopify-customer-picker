@@ -20,7 +20,7 @@ const configurationController = {
         points_price: rewardProductConfiguration.points,
       };
 
-      let createOrUpdateProductMetafieldResponse = await shopifyApiRest.product.metafield.create(shopifySessionFromInternalApiRequest?._id || req.shopifySession._id, rewardProductConfiguration.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
+      let createOrUpdateProductMetafieldResponse = await shopifyApiRest.product.metafield.create(shopifySessionFromInternalApiRequest || req.shopifySession, rewardProductConfiguration.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
       // debugger
       console.log("createOrUpdateProductMetafieldResponse: ", createOrUpdateProductMetafieldResponse);
     }
