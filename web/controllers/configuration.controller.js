@@ -17,7 +17,7 @@ const configurationController = {
     const rewardProductConfiguration = isRewardProduct ? response[0].reward_products.filter((reward_product) => reward_product.shopify_product_id == shopifySessionFromInternalApiRequest ? 'gid://shopify/Product/' + req.params.shopify_product_id : req.params.shopify_product_id)[0] : null;
     if (isRewardProduct && rewardProductConfiguration.shopify_product_id) {
       let metafieldValue = {
-        points_price: rewardProductConfiguration.points,
+        points_price: rewardProductConfiguration.points_price,
       };
 
       let createOrUpdateProductMetafieldResponse = await shopifyApiRest.product.metafield.create(shopifySessionFromInternalApiRequest || req.shopifySession, rewardProductConfiguration.shopify_product_id, "loyalty_program", "configuration", metafieldValue, "json");
