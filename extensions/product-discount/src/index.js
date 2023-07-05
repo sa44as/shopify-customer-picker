@@ -37,6 +37,8 @@ export default /**
 
     let usedRewardPoints = 0;
     let isProductVariant, getProductConfigurations, productConfigurations, pointsPrice, eligibleQuantity, isEligible, isStillEligible, isAllQuantityEligible/*, buyWith*/;
+    // debugger
+    console.log("!!! START TARGETS GENERATION !!!");
     // lines quantity remainders, can be used later
     // const splitedLines = [];
     const targets = input.cart.lines
@@ -82,14 +84,29 @@ export default /**
       })
       .map(line => {
         const variant = /** @type {ProductVariant} */ (line.merchandise);
-        return /** @type {Target} */ ({
+        const target = /** @type {Target} */ {
           productVariant: {
             id: variant.id,
             quantity: line.quantity,
           }
-        });
-      });
-    
+        };
+        // debugger
+        console.log("target: ", JSON.stringify(target));
+        return /** @type {Target} */ (target);
+      })
+      .reduce((accumulator, current) => {
+          let itemIndex = accumulator.findIndex((item) => item.productVariant.id === current.productVariant.id);
+          if (itemIndex != -1) {
+            accumulator[itemIndex].productVariant.quantity = accumulator[itemIndex].productVariant.quantity + current.productVariant.quantity;
+          } else {
+            accumulator = accumulator.concat(current);
+          }
+          return accumulator;
+      }, []);
+      // debugger
+      console.log("!!! END TARGETS GENERATION !!!");
+      // debugger
+      console.log("targets: ", JSON.stringify(targets));
     // lines quantity remainders, can be used later
     // if (splitedLines.length) {
     //   for (const line of splitedLines) {
