@@ -51,10 +51,10 @@ export default function CustomersPoints() {
     !isLoading && !getCustomersPoints?.customers_points?.length ? (
       <Card sectioned>
         <EmptyState
-          heading="Create customer points multiplier"
-          /* This button will take the user to a Create a customer points page */
+          heading="Create Individual customer points multiplier"
+          /* This button will take the user to a Create a Individual customer points page */
           action={{
-            content: "Create customer points multiplier",
+            content: "Create Individual customer points multiplier",
             onAction: () => navigate("/customers_points/new"),
           }}
           image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
@@ -71,11 +71,11 @@ export default function CustomersPoints() {
     and include the empty state contents set above.
   */
   return (
-    <Page fullWidth={!!customersPointsMarkup}>
+    <Page /*fullWidth={!!customersPointsMarkup}*/>
       <TitleBar
-        title="Customer points multipliers"
+        title="Individual customer points multipliers"
         primaryAction={{
-          content: "Create Customer points multiplier",
+          content: "Create Individual customer points multiplier",
           onAction: () => navigate("/customers_points/new"),
         }}
       />

@@ -5,12 +5,12 @@ import { useParams } from "react-router-dom";
 import { useAppQuery } from "../../hooks";
 
 export default function CustomerPointsEdit() {
-  const breadcrumbs = [{ content: "Customer points multipliers", url: "/customers_points" }];
+  const breadcrumbs = [{ content: "Individual customer points multipliers", url: "/customers_points" }];
 
   const { shopify_customer_id } = useParams();
 
   /*
-    Fetch the Customer points.
+    Fetch the Individual customer points.
     useAppQuery uses useAuthenticatedQuery from App Bridge to authenticate the request.
     The backend supplements app data with data queried from the internal database, Shopify REST or GraphQL Admin API.
   */
@@ -31,7 +31,7 @@ export default function CustomerPointsEdit() {
     return (
       <Page>
         <TitleBar
-          title="Edit Customer points multiplier"
+          title="Edit Individual customer points multiplier"
           breadcrumbs={breadcrumbs}
           primaryAction={null}
         />
@@ -57,7 +57,7 @@ export default function CustomerPointsEdit() {
   return (
     <Page>
       <TitleBar
-        title="Edit Customer points multiplier"
+        title="Edit Individual customer points multiplier"
         breadcrumbs={breadcrumbs}
         primaryAction={null}
       />

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useAppQuery } from "../../hooks";
 
 export default function ProductPointsEdit() {
-  const breadcrumbs = [{ content: "Products points multipliers", url: "/products_points" }];
+  const breadcrumbs = [{ content: "Specific product points multipliers", url: "/products_points" }];
 
   const { shopify_product_id } = useParams();
 
@@ -31,7 +31,7 @@ export default function ProductPointsEdit() {
     return (
       <Page>
         <TitleBar
-          title="Edit Product points multiplier"
+          title="Edit Specific product points multiplier"
           breadcrumbs={breadcrumbs}
           primaryAction={null}
         />
@@ -45,7 +45,7 @@ export default function ProductPointsEdit() {
             </Card>
           </Layout.Section>
           <Layout.Section>
-            <Card sectioned title="Points price multiplier" >
+            <Card sectioned title="Multiplier - Product money price $1 = [Multiplier] points" >
               <SkeletonBodyText lines={3} />
             </Card>
           </Layout.Section>
@@ -57,7 +57,7 @@ export default function ProductPointsEdit() {
   return (
     <Page>
       <TitleBar
-        title="Edit Product points multiplier"
+        title="Edit Specific product points multiplier"
         breadcrumbs={breadcrumbs}
         primaryAction={null}
       />

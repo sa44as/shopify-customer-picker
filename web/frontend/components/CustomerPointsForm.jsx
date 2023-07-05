@@ -29,7 +29,7 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
   const [customerPoints, setCustomerPoints] = useState(InitialCustomerPoints);
   const [loading, setLoading] = useState(false);
   const [shopifyCustomers, setShopifyCustomers] = useState([]);
-  const [first, setFirst] = useState(10);
+  const [first, setFirst] = useState(50);
   const [query, setQuery] = useState("state:'ENABLED'");
   const [after, setAfter] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -45,9 +45,9 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
       (async () => {
         const parsedBody = body;
         const customerPointsId = customerPoints && customerPoints.shopify_customer_id.includes("gid://") ? customerPoints.shopify_customer_id.split("/").length && customerPoints.shopify_customer_id.split("/")[customerPoints.shopify_customer_id.split("/").length - 1] : customerPoints?.shopify_customer_id;
-        /* construct the appropriate URL to send the API request to based on whether the Customer points multiplier is new or being updated */
+        /* construct the appropriate URL to send the API request to based on whether the Individual customer points multiplier is new or being updated */
         const url = customerPointsId ? `/api/internal/v1/configuration/customer_points/${customerPointsId}` : "/api/internal/v1/configuration/customer_points";
-        /* a condition to select the appropriate HTTP method: PATCH to update a Customer points multiplier or POST to create a new Customer points multiplier */
+        /* a condition to select the appropriate HTTP method: PATCH to update a Individual customer points multiplier or POST to create a new Individual customer points multiplier */
         const method = customerPointsId ? "PATCH" : "POST";
         /* use (authenticated) fetch from App Bridge to send the request to the API and, if successful, clear the form to reset the ContextualSaveBar and parse the response JSON */
         const response = await fetch(url, {
@@ -60,10 +60,10 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
           makeClean();
           const getCustomerPoints = await response.json();
           const customerId = getCustomerPoints.customer_points.shopify_customer_id.includes("gid://") ? getCustomerPoints.customer_points.shopify_customer_id.split("/").length && getCustomerPoints.customer_points.shopify_customer_id.split("/")[getCustomerPoints.customer_points.shopify_customer_id.split("/").length - 1] : getCustomerPoints.customer_points.shopify_customer_id;
-          /* if this is a new Customer points multiplier, then save the Customer points multiplier and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
+          /* if this is a new Individual customer points multiplier, then save the Individual customer points multiplier and navigate to the edit page; this behavior is the standard when saving resources in the Shopify admin */
           if (!customerPointsId) {
             navigate(`/customers_points/${customerId}`);
-            /* if this is a Customer points multiplier update, update the Customer points multiplier state in this component */
+            /* if this is a Individual customer points multiplier update, update the Individual customer points multiplier state in this component */
           } else {
             setCustomerPoints(getCustomerPoints.customer_points);
           }
@@ -111,7 +111,7 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
       }),
       points: useField({
         value: customerPoints?.points || "",
-        validates: [notEmptyString("Please give points price multiplier your customer"), positiveIntegerString("The points price multiplier can't accept the negative value")],
+        validates: [notEmptyString("Give a Multiplier to the Customer."), positiveIntegerString("The Multiplier can't accept the negative value.")],
       }),
       shopifyCustomerFirstName: useField({
         value: customerPoints?.shopify_customer_first_name || "",
@@ -233,7 +233,7 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const deleteCustomerPoints = useCallback(async () => {
     reset();
-    /* The isDeleting state disables the delete Customer points multiplier button to show the user that an action is in progress */
+    /* The isDeleting state disables the delete Individual customer points multiplier button to show the user that an action is in progress */
     setIsDeleting(true);
     const response = await fetch(`/api/internal/v1/configuration/customer_points/${customerPoints.shopify_customer_id.includes("gid://") ? customerPoints.shopify_customer_id.split("/").length && customerPoints.shopify_customer_id.split("/")[customerPoints.shopify_customer_id.split("/").length - 1] : customerPoints?.shopify_customer_id}`, {
       method: "DELETE",
@@ -334,13 +334,13 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
                   )}
                 </Card.Section>
               </Card>
-              <Card sectioned title="Purchased product money price $1 = [multiplier] points for the selected customer.">
+              <Card sectioned title="Multiplier - Purchased product money price $1 = [multiplier] points for the selected customer.">
                 <TextField
                   {...points}
                   type="number"
-                  label="Points price multiplier"
+                  label="Multiplier"
                   labelHidden
-                  helpText="Give points price multiplier your customer"
+                  helpText="Give a multiplier to the Individual customer"
                 />
               </Card>
             </FormLayout>
@@ -354,7 +354,7 @@ export function CustomerPointsForm({ customerPoints: InitialCustomerPoints }) {
               onClick={deleteCustomerPoints}
               loading={isDeleting}
             >
-              Delete Customer points multiplier
+              Delete Individual customer points multiplier
             </Button>
           )}
         </Layout.Section>

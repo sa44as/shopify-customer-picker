@@ -105,7 +105,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
       }),
       pointsPrice: useField({
         value: rewardProduct?.points_price || "",
-        validates: [notEmptyString("Please give points price your Reward product"), positiveIntegerString("The points price can't accept the negative value")],
+        validates: [notEmptyString("Give a points price to the Reward product."), positiveIntegerString("The Points price can't accept the negative value.")],
       }),
       shopifyProductTitle: useField({
         value: rewardProduct?.shopify_product_title || "",
@@ -262,7 +262,7 @@ export function RewardProductForm({ rewardProduct: InitialRewardProduct }) {
                   type="number"
                   label="Points price"
                   labelHidden
-                  helpText="Give points price your reward product"
+                  helpText="Give a points price to the Reward product."
                 />
               </Card>
             </FormLayout>

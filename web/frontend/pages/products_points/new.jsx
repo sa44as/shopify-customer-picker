@@ -3,12 +3,12 @@ import { TitleBar } from "@shopify/app-bridge-react";
 import { ProductPointsForm } from "../../components";
 
 export default function ManageProductPoints() {
-  const breadcrumbs = [{ content: "Product points multipliers", url: "/products_points" }];
+  const breadcrumbs = [{ content: "Specific product points multipliers", url: "/products_points" }];
 
   return (
     <Page>
       <TitleBar
-        title="Create new Product points multiplier"
+        title="Create a new Specific product points multiplier"
         breadcrumbs={breadcrumbs}
         primaryAction={null}
       />

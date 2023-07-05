@@ -11,13 +11,13 @@ export function ProductsPointsIndex({ productsPoints, loading }) {
   const navigate = useNavigate();
 
   const resourceName = {
-    singular: "Product points multiplier",
-    plural: "Product points multipliers",
+    singular: "Specific product points multiplier",
+    plural: "Specific product points multipliers",
   };
 
   const rowMarkup = productsPoints.map(
     ({ shopify_product_id, shopify_product_title, shopify_product_image_url, points }, index) => {
-      /* The form layout, created using Polaris components. Includes the product points multiplier data set above. */
+      /* The form layout, created using Polaris components. Includes the Specific product points multiplier data set above. */
       return (
         <IndexTable.Row
           id={shopify_product_id}
@@ -55,7 +55,7 @@ export function ProductsPointsIndex({ productsPoints, loading }) {
         headings={[
           { title: "Thumbnail", hidden: true },
           { title: "Title" },
-          { title: "Product money price $1 = [x] points multiplier" },
+          { title: "Multiplier - Product money price $1 = [Multiplier] points" },
         ]}
         selectable={false}
         loading={loading}

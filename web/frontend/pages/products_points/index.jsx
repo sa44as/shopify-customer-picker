@@ -51,16 +51,16 @@ export default function ProductsPoints() {
     !isLoading && !getProductsPoints?.products_points?.length ? (
       <Card sectioned>
         <EmptyState
-          heading="Create product points multiplier"
+          heading="Create Specific product points multiplier"
           /* This button will take the user to a Create a product points multiplier page */
           action={{
-            content: "Create product points multiplier",
+            content: "Create Specific product points multiplier",
             onAction: () => navigate("/products_points/new"),
           }}
           image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
         >
           <p>
-            Setup product points price multiplier.
+            Choose a product from the shop to make it a Specific product and set up a points price multiplier.
           </p>
         </EmptyState>
       </Card>
@@ -71,11 +71,11 @@ export default function ProductsPoints() {
     and include the empty state contents set above.
   */
   return (
-    <Page fullWidth={!!productsPointsMarkup}>
+    <Page /*fullWidth={!!productsPointsMarkup}*/>
       <TitleBar
-        title="Products points multipliers"
+        title="Specific product points multipliers"
         primaryAction={{
-          content: "Create Product points multiplier",
+          content: "Create Specific product points multiplier",
           onAction: () => navigate("/products_points/new"),
         }}
       />

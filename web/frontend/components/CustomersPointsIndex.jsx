@@ -9,13 +9,13 @@ export function CustomersPointsIndex({ customersPoints, loading }) {
   const navigate = useNavigate();
 
   const resourceName = {
-    singular: "Customer points multiplier",
-    plural: "Customer points multipliers",
+    singular: "Individual customer points multiplier",
+    plural: "Individual customer points multipliers",
   };
 
   const rowMarkup = customersPoints.map(
     ({ shopify_customer_id, shopify_customer_first_name, shopify_customer_last_name, shopify_customer_email, points }, index) => {
-      /* The form layout, created using Polaris components. Includes the customer points multiplier data set above. */
+      /* The form layout, created using Polaris components. Includes the Individual customer points multiplier data set above. */
       return (
         <IndexTable.Row
           id={shopify_customer_id}

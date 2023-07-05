@@ -51,16 +51,16 @@ export default function RewardProducts() {
     !isLoading && !getRewardProducts?.reward_products?.length ? (
       <Card sectioned>
         <EmptyState
-          heading="Create reward product"
+          heading="Create Reward product"
           /* This button will take the user to a Create a reward product page */
           action={{
-            content: "Create reward product",
+            content: "Create Reward product",
             onAction: () => navigate("/reward_products/new"),
           }}
           image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
         >
           <p>
-            Make the reward product and setup points price.
+            Choose a product from the shop to make it a Reward product and set up a points price.
           </p>
         </EmptyState>
       </Card>
@@ -71,7 +71,7 @@ export default function RewardProducts() {
     and include the empty state contents set above.
   */
   return (
-    <Page fullWidth={!!rewardProductsMarkup}>
+    <Page /*fullWidth={!!rewardProductsMarkup}*/>
       <TitleBar
         title="Reward products"
         primaryAction={{

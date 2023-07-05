@@ -105,7 +105,7 @@ export function ProductPointsForm({ productPoints: InitialProductPoints }) {
       }),
       points: useField({
         value: productPoints?.points || "",
-        validates: [notEmptyString("Please give points price multiplier your product"), positiveIntegerString("The points price multiplier can't accept the negative value")],
+        validates: [notEmptyString("Give a Multiplier to the Specific product."), positiveIntegerString("The Multiplier can't accept the negative value.")],
       }),
       shopifyProductTitle: useField({
         value: productPoints?.shopify_product_title || "",
@@ -256,13 +256,13 @@ export function ProductPointsForm({ productPoints: InitialProductPoints }) {
                   )}
                 </Card.Section>
               </Card>
-              <Card sectioned title="Product money price $1 = [x] points price multiplier">
+              <Card sectioned title="Multiplier - Product money price $1 = [Multiplier] points">
                 <TextField
                   {...points}
                   type="number"
-                  label="Points price multiplier"
+                  label="Multiplier"
                   labelHidden
-                  helpText="Give points price multiplier your product"
+                  helpText="Give a multiplier to the Specific product"
                 />
               </Card>
             </FormLayout>
@@ -276,7 +276,7 @@ export function ProductPointsForm({ productPoints: InitialProductPoints }) {
               onClick={deleteProductPoints}
               loading={isDeleting}
             >
-              Delete Product points multiplier
+              Delete Specific product points multiplier
             </Button>
           )}
         </Layout.Section>
