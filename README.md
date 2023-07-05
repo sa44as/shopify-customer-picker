@@ -234,8 +234,8 @@ pnpm dev --tunnel-url https://randomly-generated-hostname.trycloudflare.com:3000
 ## Loyalty program
 
 For integration with the shop, you need to check only external thre API endpoints, the loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/:shopify_product_id, and loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/:shopify_customer_id before adding the product to the cart, and the loyalty-program.bnsystems.org/api/external/v1/order/:shopify_customer_id for detailed order data with rewarded points, please review the below Endpoints documentation for more information.
-
-Repository: https://github.com/Stax-LTD/loyalty-program 
+Note: The loyalty-program discount is working with a product-discount function (extension), and the extension is running like the below scenario:
+When a product variant exists on the cart, you need to use the quantity change cart API endpoint instead of adding to the cart endpoint, the function doesn't run when the product variant exists in the cart and you are using add to cart Shopify API endpoint for the same product variant.
 
 Get started
 Read Readme.md to understand used technologies, how to work with Shopify CLI commands, and how to run the application in dev mode, then clone the repository, install packages, and run development.
