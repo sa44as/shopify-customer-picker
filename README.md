@@ -234,8 +234,6 @@ pnpm dev --tunnel-url https://randomly-generated-hostname.trycloudflare.com:3000
 ## Loyalty program
 
 For integration with the shop, you need to check only external thre API endpoints, the loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/:shopify_product_id, and loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/:shopify_customer_id before adding the product to the cart, and the loyalty-program.bnsystems.org/api/external/v1/order/:shopify_customer_id for detailed order data with rewarded points, please review the below Endpoints documentation for more information.
-Note: The loyalty-program discount is working with a product-discount function (extension), and the extension is running like the below scenario:
-When a product variant exists on the cart, you need to use the quantity change cart API endpoint instead of adding to the cart endpoint, the function doesn't run when the product variant exists in the cart and you are using add to cart Shopify API endpoint for the same product variant.
 
 Get started
 Read Readme.md to understand used technologies, how to work with Shopify CLI commands, and how to run the application in dev mode, then clone the repository, install packages, and run development.
@@ -252,8 +250,7 @@ Backend
 2. Custom authentication middleware is made for the External API endpoints that attach the shop access token to the request, the external API endpoints are accessible only from the shop domain where the application is installed, and the requests from other sources will be blocked by CORS.
 3. The GDPR and ORDERS webhookHandlers are made to receive the ORDERS_PAID webhook from Shopify.
 The ORDERS_PAID  webhookHandler is receiving the order payload and makes custom calculations using predefined entire Shop, Individual Customers, Specific products, Pre-sale products, Gift card products, and Specific dates configurations and stores historical data in the internal database mongoDB.
-4. The API endpoints /api/internal/v1 and  the /api/external/v1 are made for Configurations CRUD modules and for integration with the SHOP.
-
+4. The API endpoints /api/internal/v1 and the /api/external/v1 are made for Configurations CRUD modules and for integration with the SHOP.
 
 Frontend
 1. The frontend structure is made for having pages with dynamic routes, components, hooks, and constants, keeping all necessary things compatible with the Shopify CLI, and with AppBridge, and Polaris, using which ones can be done authenticated fetch to the internal API requests from the App Admin interface.
