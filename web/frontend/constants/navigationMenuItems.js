@@ -4,11 +4,11 @@ const navigationMenuItems = [
     destination: "/reward_products",
   },
   {
-    label: "Product points multipliers",
+    label: "Specific product points multipliers",
     destination: "/products_points",
   },
   {
-    label: "Customer points multipliers",
+    label: "Individual customer points multipliers",
     destination: "/customers_points",
   },
 ];
