@@ -1,7 +1,7 @@
-const navigationMenuItems = [  
+const navigationMenuItems = [
   {
-    label: "Reward Products",
-    destination: "/reward_products",
+    label: "Entire store points multipliers",
+    destination: "/store_points",
   },
   {
     label: "Specific product points multipliers",
@@ -10,6 +10,10 @@ const navigationMenuItems = [
   {
     label: "Individual customer points multipliers",
     destination: "/customers_points",
+  },
+  {
+    label: "Reward Products",
+    destination: "/reward_products",
   },
 ];
 

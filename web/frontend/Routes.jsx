@@ -25,7 +25,7 @@ export default function Routes({ pages }) {
   return (
     <ReactRouterRoutes>
       {routeComponents}
-      <Route path="/" element={ <Navigate to="/reward_products" /> } />
+      <Route path="/" element={ <Navigate to="/store_points" /> } />
       <Route path="*" element={<NotFound />} />
     </ReactRouterRoutes>
   );

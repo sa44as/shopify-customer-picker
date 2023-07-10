@@ -4,7 +4,7 @@ const configurationValidation = {
   reward_products: {
     points_price: {
       min: [
-        1,
+        0,
         'The value of path `{PATH}` ({VALUE}) is beneath the limit ({MIN}).'
       ],
     },

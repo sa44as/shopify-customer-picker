@@ -24,6 +24,8 @@ const configurationInternalRoutes = () => {
   router.post("/customer_points", configurationController.createCustomerPoints);
   router.patch("/customer_points/:shopify_customer_id", configurationController.editCustomerPoints);
   router.delete("/customer_points/:shopify_customer_id", configurationController.deleteCustomerPoints);
+  router.patch("/entire_store_points", configurationController.editEntireStorePoints);
+  router.get("", configurationController.get);
   return router;
 }
 

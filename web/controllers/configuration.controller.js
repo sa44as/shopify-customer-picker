@@ -1,6 +1,25 @@
 import { configurationService, shopifyApiRest } from "../services/map.js";
 
 const configurationController = {
+  get: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals?.shopify?.session;
+    const response = await configurationService.find(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest?._id,
+      },
+    );
+
+    const isConfiguration = Array.isArray(response) && response.length;
+
+    return res.status(isConfiguration ? 200 : 404).json(
+      isConfiguration ? response[0] :
+      {
+        error: {
+          message: "Configuration not found",
+        }
+      }
+    );
+  },
   isRewardProduct: async (req, res) => {
     const shopifySessionFromInternalApiRequest = res.locals?.shopify?.session;
     const response = await configurationService.find(
@@ -423,6 +442,20 @@ const configurationController = {
         customers_points: response[0]?.customers_points,
       }
     );
+  },
+  editEntireStorePoints: async (req, res) => {
+    const shopifySessionFromInternalApiRequest = res.locals.shopify.session;
+
+    const response = await configurationService.updateEntireStorePoints(
+      {
+        shopify_session: shopifySessionFromInternalApiRequest,
+        default_points: req.body.defaultPoints,
+        pre_sale_products_points: req.body.preSaleProductsPoints,
+        gift_card_products_points: req.body.giftCardProductsPoints,
+      }
+    );
+
+    return res.status(response.error ? 400 : 200).json(response);
   },
 }
 

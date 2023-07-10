@@ -599,6 +599,35 @@ const deleteCustomerPoints = async ({shopify_session, shopify_customer_id}) => {
   }
 }
 
+const updateEntireStorePoints = async ({shopify_session, default_points, pre_sale_products_points, gift_card_products_points}) => {
+  const tranfromedEntireStorePointsData = {
+    default_points,
+    pre_sale_products_points,
+    gift_card_products_points,
+  };
+
+  try {
+    const response = await configurationModel.findOneAndUpdate(
+      {
+        shopify_session: shopify_session._id,
+      },
+      {
+        $set: tranfromedEntireStorePointsData,
+      },
+      {
+        runValidators: true,
+      },
+    );
+    return tranfromedEntireStorePointsData;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'Error while updating Entire store points Configuration. Original err.message: ' + err.message,
+      original_message: err.message,
+    };
+  }
+}
+
 const configurationService = {
   watchNewShopExistenceAndSetupConfiguration,
   create,
@@ -613,6 +642,7 @@ const configurationService = {
   createCustomerPoints,
   updateCustomerPoints,
   deleteCustomerPoints,
+  updateEntireStorePoints,
 }
 
 export { configurationService }

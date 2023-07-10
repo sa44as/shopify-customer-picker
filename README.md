@@ -438,26 +438,21 @@ Completed TO DOS
 
 1. Install the app in the staging environment after discussion with the integration team, I need to provide a development store to the integration team, where they need to install the Stax 2.0 theme latest version, parallelly I will install the app staging environment to the same development store. - DONE
 
-
+2. Integration with SHOP using the above-mentioned API endpoints and the Product and Customer Shopify metafield values and in Cart existing products data to compare things and understand if the Customer balance - in cart reward product points * in cart reward product quantity >= New product adding to cart when the customer clicks to the Buy with points button. - IN PROGRESS by the integration team
 
 3. Admin interface Configuration:
 
+a) Entire store $1  = [number input] points - DONE
 b) Specific products [product input] $1 = [number input] points  - CRUD is done
 c) Individual customers [customer input] $1 = [number input] points - CRUD is done
+d) Specific dates [date range input] $1 = [number input] points - In progress
 g) Reward products [product input] points price [number input] points - CRUD is done
 h) Navigation, pages, and routes - are done
+e) Pre Sale product $1 = [number input] points - DONE
+f) Gift Card $1 = [number input] points - DONE
+
+
+4. Many internal API endpoints documentation are not documented and have very low priority, possibly also not necessary. - Marked as not necessary
 
 5. Final review for double-checking, optimizing, and finalizing all things that are necessary for integration with the shop - Done
-
-TO DOS
-
-1. Integration with SHOP using the above-mentioned API endpoints and the Product and Customer Shopify metafield values and in Cart existing products data to compare things and understand if the Customer balance - in cart reward product points * in cart reward product quantity >= New product adding to cart when the customer clicks to the Buy with points button. - IN PROGRESS by the integration team
-
-3.  Admin interface Configuration:
-a) Entire store $1  = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
-d) Specific dates [date range input] $1 = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
-e) Pre Sale product $1 = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
-f) Gift Card $1 = [number input] points (low priority - because the backend is done. and the default setting  multiplier is 1, which can be done after final review for double checking, optimizing, and finalizing all things that are necessary for integration with the shop)
-
-4. ) Many internal API endpoints documentation are not documented and have very low priority, possibly also not necessary.
    
