@@ -234,6 +234,7 @@ pnpm dev --tunnel-url https://randomly-generated-hostname.trycloudflare.com:3000
 ## Loyalty program
 
 For integration with the shop, you need to check only external thre API endpoints, the loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/:shopify_product_id, and loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/:shopify_customer_id before adding the product to the cart, and the loyalty-program.bnsystems.org/api/external/v1/order/:shopify_customer_id for detailed order data with rewarded points, please review the below Endpoints documentation for more information.
+The reward products list you can get from the shop metafield: Namespace: “loyalty-program“, Key: “reward_products“.
 
 Get started
 Read Readme.md to understand used technologies, how to work with Shopify CLI commands, and how to run the application in dev mode, then clone the repository, install packages, and run development.
@@ -445,11 +446,11 @@ Completed TO DOS
 a) Entire store $1  = [number input] points - DONE
 b) Specific products [product input] $1 = [number input] points  - CRUD is done
 c) Individual customers [customer input] $1 = [number input] points - CRUD is done
-d) Specific dates [date range input] $1 = [number input] points - In progress
 g) Reward products [product input] points price [number input] points - CRUD is done
 h) Navigation, pages, and routes - are done
 e) Pre Sale product $1 = [number input] points - DONE
 f) Gift Card $1 = [number input] points - DONE
+d) Specific dates [date range input] $1 = [number input] points - In progress
 
 
 4. Many internal API endpoints documentation are not documented and have very low priority, possibly also not necessary. - Marked as not necessary

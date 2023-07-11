@@ -343,7 +343,17 @@ const createRewardProduct = async ({shopify_session, reward_product}) => {
           reward_products: transformedRewardProductData,
         }
       },
+      {
+        new: true,
+      },
     );
+
+    // get reward products from configuration and update Shopify shop loyalty_program.reward_products of list.product_reference type
+    const metafieldValue = response.reward_products.map((rewardProduct) => rewardProduct.shopify_product_id);
+    const createOrUpdateshopifyShopMetafield = await shopifyApiRest.shop.metafield.create_or_update(shopify_session, "loyalty_program", "reward_products", metafieldValue, "list.product_reference");
+    // debugger
+    console.log("createRewardProduct.createOrUpdateshopifyShopMetafield: ", createOrUpdateshopifyShopMetafield);
+
     return transformedRewardProductData;
   } catch (err) {
     return {
@@ -371,9 +381,11 @@ const updateRewardProduct = async ({shopify_session, reward_product}) => {
           {
             "outer.shopify_product_id": transformedRewardProductData.shopify_product_id
           }
-        ]
+        ],
+        new: true,
       }
     );
+
     return transformedRewardProductData;
   } catch (err) {
     return {
@@ -388,7 +400,6 @@ const deleteRewardProduct = async ({shopify_session, shopify_product_id}) => {
     const response = await configurationModel.findOneAndUpdate(
       {
         shopify_session: shopify_session._id,
-        "reward_products.shopify_product_id": shopify_product_id,
       },
       {
         $pull: {
@@ -396,7 +407,7 @@ const deleteRewardProduct = async ({shopify_session, shopify_product_id}) => {
             shopify_product_id: shopify_product_id,
           }
         }
-      }
+      },
     );
 
     const isRewardProduct = response && typeof response === "object";
@@ -405,6 +416,12 @@ const deleteRewardProduct = async ({shopify_session, shopify_product_id}) => {
     if (rewardProductConfiguration) {
       await shopifyApiRest.product.metafield.delete(shopify_session, shopify_product_id, rewardProductConfiguration.shopify_metafield.id);
     }
+
+    // get reward products from configuration and update Shopify shop loyalty_program.reward_products of list.product_reference type
+    const metafieldValue = response.reward_products.filter((rewardProduct) => rewardProduct.shopify_product_id != shopify_product_id).map((rewardProduct) => rewardProduct.shopify_product_id);
+    const createOrUpdateshopifyShopMetafield = await shopifyApiRest.shop.metafield.create_or_update(shopify_session, "loyalty_program", "reward_products", metafieldValue, "list.product_reference");
+    // debugger
+    console.log("deleteRewardProduct.createOrUpdateshopifyShopMetafield: ", createOrUpdateshopifyShopMetafield);
 
     return response;
   } catch (err) {

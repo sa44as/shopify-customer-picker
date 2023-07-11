@@ -1,6 +1,28 @@
 import { shopify } from "../../index.js";
 
 const shopifyApiRest = {
+  shop: {
+    metafield: {
+      create_or_update: async (session, namespace, key, value, type) => {
+        try {
+          const metafield = new shopify.api.rest.Metafield({session});
+          metafield.namespace = namespace;
+          metafield.key = key;
+          metafield.value = type === "json" || type === "list.product_reference" ? JSON.stringify(value) : value;
+          metafield.type = type;
+          await metafield.save(
+            {
+              update: true,
+            }
+          );
+          return metafield;
+        } catch (err) {
+          console.log("shopifyApiRest.shop.metafield.create_or_update.err: ", err);
+          return null;
+        }
+      },
+    }
+  },
   product: {
     get: async (session, id) => {
       try {
