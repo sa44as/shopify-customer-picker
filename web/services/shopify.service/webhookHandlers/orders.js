@@ -11,6 +11,8 @@ const OrdersWebhookHandlers = {
     deliveryMethod: DeliveryMethod.Http,
     callbackUrl: "/api/webhooks",
     callback: async (topic, shop, body, webhookId) => {
+      // dbeugger
+      console.log("ORDERS_PAID.body: ", body);
       const payload = JSON.parse(body);
       const isCustomerHasAccount = payload.customer.state === "enabled";
 

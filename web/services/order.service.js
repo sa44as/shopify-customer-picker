@@ -64,7 +64,10 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const isGiftCard = isShopifyProductfound ? shopifyProduct.product_type === 'Gift Cards' : false;
 
   const currentDate = new Date();
-
+  // debugger
+  console.log("shopifyCustomerId: ", shopifyCustomerId, "shopifyProductId: ", shopifyProductId);
+  console.log("configuration.customers_points: ", configuration.customers_points);
+  console.log("onfiguration.products_points: ", configuration.products_points);
   const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id == shopifyCustomerId);
   const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id == shopifyProductId);
   const getDatesPoints = configuration.dates_points.filter((datePoints) => currentDate > datePoints.from && currentDate < datePoints.to);
