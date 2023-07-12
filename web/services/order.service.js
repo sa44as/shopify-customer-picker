@@ -68,8 +68,8 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   console.log("shopifyCustomerId: ", shopifyCustomerId, "shopifyProductId: ", shopifyProductId);
   console.log("configuration.customers_points: ", configuration.customers_points);
   console.log("onfiguration.products_points: ", configuration.products_points);
-  const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id == shopifyCustomerId);
-  const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id == shopifyProductId);
+  const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id === "gid://shopify/Customer/" + shopifyCustomerId);
+  const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id === "gid://shopify/Product/" + shopifyProductId);
   const getDatesPoints = configuration.dates_points.filter((datePoints) => currentDate > datePoints.from && currentDate < datePoints.to);
   // debugger
   // console.log('getDatesPoints: ', getDatesPoints);
@@ -126,6 +126,8 @@ const getTransformedShopifyLineItemsData = async (shopifySession, configuration,
     transformedShopifyLineItem.shopify_variant_id = shopifyLineItem.shopify_variant_id;
     transformedShopifyLineItem.shopify_quantity = shopifyLineItem.shopify_quantity;
     transformedShopifyLineItem.shopify_price = shopifyLineItem.shopify_price;
+    transformedShopifyLineItem.shopify_discount_allocations = shopifyLineItem.shopify_discount_allocations;
+    transformedShopifyLineItem.shopify_properties = shopifyLineItem.shopify_properties;
     transformedShopifyLineItem.points = calculatedLineItemPoints;
 
     transformedShopifyLineItems = [...transformedShopifyLineItems, transformedShopifyLineItem];
@@ -152,11 +154,11 @@ const getTransformedOrderData = async (shopifySession, documents) => {
   for (const item of documents) {
     isDocumentDataValid = typeof item === 'object' &&
       (
-        item.shopify_webhook_id ||
-        item.shopify_order_id ||
-        item.shopify_customer_id ||
-        item.shopify_line_items ||
-        item.shopify_total_line_items_price ||
+        item.shopify_webhook_id &&
+        item.shopify_order_id &&
+        item.shopify_customer_id &&
+        item.shopify_line_items &&
+        item.shopify_total_line_items_price &&
         item.shopify_order_number
       );
     
