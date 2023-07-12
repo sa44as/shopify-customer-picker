@@ -69,15 +69,23 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
   const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id == shopifyProductId);
   const getDatesPoints = configuration.dates_points.filter((datePoints) => currentDate > datePoints.from && currentDate < datePoints.to);
   // debugger
-  console.log('getDatesPoints: ', getDatesPoints);
+  // console.log('getDatesPoints: ', getDatesPoints);
   const defaultPoints = configuration.default_points;
   const shopifyCustomerPoints = getShopifyCustomerPoints.length ? getShopifyCustomerPoints[0].points : 0;
   const shopifyProductPoints = getShopifyProductPoints.length ? getShopifyProductPoints[0].points : 0;
-  const datePoints = getDatesPoints.length ? getDatesPoints[0].points : 0;
+  // debugger
+  console.log(
+    "defaultPoints: ", defaultPoints,
+    "shopifyCustomerPoints: ", shopifyCustomerPoints,
+    "shopifyProductPoints: ", shopifyProductPoints,
+  );
+  // const datePoints = getDatesPoints.length ? getDatesPoints[0].points : 0; // to do
   const preSaleProductsPoints = isPreSale ? configuration.pre_sale_products_points : 0;
   const giftCardProductsPoints = isGiftCard ? configuration.gift_card_products_points : 0;
 
-  const allLevelsPoints = [defaultPoints, shopifyCustomerPoints, shopifyProductPoints, datePoints, preSaleProductsPoints, giftCardProductsPoints];
+  const allLevelsPoints = [defaultPoints, shopifyCustomerPoints, shopifyProductPoints, /*datePoints,*/ preSaleProductsPoints, giftCardProductsPoints];
+  // debugger
+  console.log("allLevelsPoints: ", allLevelsPoints);
   const multiplier = Math.max(...allLevelsPoints);
 
   const calculatedPoints = getCalculatedPoints(multiplier, shopifyQuantity, shopifyPrice);
