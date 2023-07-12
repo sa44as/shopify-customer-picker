@@ -53,7 +53,7 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
     let calculatedPointsPrice = -(pointsPrice * shopifyQuantity);
     return calculatedPointsPrice;
   }
-
+// to do, make sure pre sale and gift cards is working correctly
   const getShopifyVariant = isShopifyProductfound ? shopifyProduct.variants.filter((variant) => variant.id === shopifyVariantId) : null;
   const isShopifyVariantFound = getShopifyVariant.length;
   const shopifyVariant = isShopifyVariantFound ? getShopifyVariant[0] : null;
@@ -65,9 +65,10 @@ const getCalculatedLineItemPoints = async (shopifySession, configuration, shopif
 
   const currentDate = new Date();
   // debugger
+  console.log("shopifyProduct: ", JSON.stringify(shopifyProduct));
   console.log("shopifyCustomerId: ", shopifyCustomerId, "shopifyProductId: ", shopifyProductId);
   console.log("configuration.customers_points: ", configuration.customers_points);
-  console.log("onfiguration.products_points: ", configuration.products_points);
+  console.log("configuration.products_points: ", configuration.products_points);
   const getShopifyCustomerPoints = configuration.customers_points.filter((customerPoints) => customerPoints.shopify_customer_id === "gid://shopify/Customer/" + shopifyCustomerId);
   const getShopifyProductPoints = configuration.products_points.filter((productPoints) => productPoints.shopify_product_id === "gid://shopify/Product/" + shopifyProductId);
   const getDatesPoints = configuration.dates_points.filter((datePoints) => currentDate > datePoints.from && currentDate < datePoints.to);
