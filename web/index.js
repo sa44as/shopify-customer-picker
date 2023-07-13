@@ -100,9 +100,18 @@ app.use('/api/internal/v1/shopify', shopifyRoutes());
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
-app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
+const beforeEnsureInstallOnShop = (_req, res, next) => {
   // debugger
   console.log("_req.originalUrl: ", _req.originalUrl);
+  next();
+}
+
+app.use("/*",
+  [
+    beforeEnsureInstallOnShop,
+    shopify.ensureInstalledOnShop()
+  ],
+  async (_req, res, _next) => {
   return res
     .status(200)
     .set("Content-Type", "text/html")
