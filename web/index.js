@@ -51,13 +51,20 @@ const corsOptions = async (req, callback) => {
     );
   }
 
+  let originWitoutHttpHttps = origin.replace(/(^\w+:|^)\/\//, '');
+  // fix for using Domain names that different than origin
+  if (originWitoutHttpHttps === "stax.com.au") {
+    originWitoutHttpHttps = "stax-livin.myshopify.com";
+  }
+
   const shopifySessions = await shopifySessionService.find(
     {
-      shop: origin.replace(/(^\w+:|^)\/\//, ''),
+      shop: originWitoutHttpHttps,
     },
   );
 
   if (shopifySessions.length < 1) {
+    console.log("Request from origin " + origin + " has been blocked by CORS policy");
     return callback(
       {
         err: 'CORS is disabled for request from origin: ' + origin
