@@ -14,7 +14,9 @@ const OrdersWebhookHandlers = {
       // dbeugger
       console.log("ORDERS_PAID.body: ", body);
       const payload = JSON.parse(body);
-      const isCustomerHasAccount = payload.customer.state === "enabled";
+      // debugger
+      console.log("payload?.customer: ", payload?.customer);
+      const isCustomerHasAccount = payload?.customer?.state === "enabled";
 
       if (!isCustomerHasAccount) {
         console.log("This customer doesn't have an account.");
