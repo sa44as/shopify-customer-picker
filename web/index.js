@@ -100,9 +100,10 @@ app.use('/api/internal/v1/shopify', shopifyRoutes());
 
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
-const beforeEnsureInstallOnShop = (_req, res, next) => {
+const beforeEnsureInstallOnShop = (req, res, next) => {
+  const origin = req.get('origin');
   // debugger
-  console.log("_req.originalUrl: ", _req.originalUrl);
+  console.log("origin:", origin, "req.originalUrl: ", req.originalUrl);
   next();
 }
 
