@@ -231,26 +231,17 @@ pnpm dev --tunnel-url https://randomly-generated-hostname.trycloudflare.com:3000
 - [Shopify API Library documentation](https://github.com/Shopify/shopify-api-js#readme)
 
 
-## Loyalty program
-
-For integration with the shop, you need to check only external thre API endpoints, the loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/:shopify_product_id, and loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/:shopify_customer_id before adding the product to the cart, and the loyalty-program.bnsystems.org/api/external/v1/order/:shopify_customer_id for detailed order data with rewarded points, please review the below Endpoints documentation for more information.
-The reward products list you can get from the shop metafield: Namespace: “loyalty-program“, Key: “reward_products“.
+## Customer picker
 
 Get started
 Read Readme.md to understand used technologies, how to work with Shopify CLI commands, and how to run the application in dev mode, then clone the repository, install packages, and run development.
-You need to deploy the product-discount function (extension) on Shopify as well using the npm run typegen command inside the extension path ./extensions/product-discount then run npm run deploy from the application root ./.
-If you are creating a new app it will be good if you clone the repository and begin from the installation of the product-discount extension as described above, only use -  -    -  -reset with npm run deploy  -   -  -  -reset to create a new app on your partner account and have the product-discount function (extension) also deployed on it as a part of the app.
-
-Shopify Functions (Extensions)
-The product-discount type function (extension)  is used for adding a 100% discount on the reward product in the Shopify → cart, this is working with the Product and the Customer metafields.
-Documentation: https://shopify.dev/docs/api/functions/reference/product-discounts 
+If you are creating a new app it will be good if you clone the repository and begin from the installationnpm run deploy  -   -  -  -reset to create a new app on your partner account.
 
 Backend
 
 1. The backend structure is made for having Models, Controllers, Routes (external and internal), and Services.
 2. Custom authentication middleware is made for the External API endpoints that attach the shop access token to the request, the external API endpoints are accessible only from the shop domain where the application is installed, and the requests from other sources will be blocked by CORS.
 3. The GDPR and ORDERS webhookHandlers are made to receive the ORDERS_PAID webhook from Shopify.
-The ORDERS_PAID  webhookHandler is receiving the order payload and makes custom calculations using predefined entire Shop, Individual Customers, Specific products, Pre-sale products, Gift card products, and Specific dates configurations and stores historical data in the internal database mongoDB.
 4. The API endpoints /api/internal/v1 and the /api/external/v1 are made for Configurations CRUD modules and for integration with the SHOP.
 
 Frontend
@@ -279,181 +270,6 @@ View logs:
 
 pm2 logs API --lines 1000
 
-4. The frontend needs to build for deployment as described here https://github.com/Stax-LTD/loyalty-program#build 
+1. The frontend needs to build for deployment as described here #build
 
-
-
-API
-API URL: loyalty-program.bnsystems.org/api
-
-
-Endpoints
-
-
-Configuration
-
-External routes
-Route: /external/v1/configuration
-Description: Used for integration with the shop.
-
-Endpoint: GET /is_reward_product/:shopify_product_id
-shopify_product_id is required
-
-Description: Check if the product is a reward product, this is necessary to be used before adding the product to the cart, (and before going to checkout ??? need to decide).
-Before going to checkout you need to detect in-cart reward products,…??? need to decide after having integrated with add-to-cart level low priority
-Note: The product that needs to be reward product needs to have a high money price to avoid wrong orders caused by any technical issue if something will go not as expected.
-Note: For rendering the reward products on grid views or on the product page, you can check the product metafield with Namespace: loyalty_program, and Key: configuration, and if the product will have that metafield it means the product is a reward and you can get the product price with points from the metafield points_price property value.
-Note: This Endpoint needs to be used with /api/external/v1/customer/points_balance/:shopify_customer_id endpoint.
-Do not use the metafield information for adding products to the cart or before going to checkout.
-
-Internal routes
-Route: /internal/v1/configuration
-Description: Used for Admin interface Configurations CRUD modules.
-
-Endpoint: GET /reward_product/:shopify_product_id
-Query parameters:
-shopify_product_id is required
-Description: Get a reward product.
-
-Endpoint: GET /reward_products
-No parameters
-Description: Get all Reward Products in the shop.
-
-Endpoint: POST /reward_product
-Body parameters:
-shopifyProductId is required
-pointsPrice is required
-shopifyProductTitle is required
-shopifyProductImageUrl is required
-Description: Create a Reward product
-
-Endpoint: PATCH /reward_product/:shopify_product_id
-Body parameters:
-shopifyProductId  is required
-pointsPrice  is required
-Description: Update Reward product points price
-
-Endpoint: DELETE /reward_product/:shopify_product_id
-Description: Delete Reward product
-
-
-Customer
-
-External routes
-Route: /external/v1/customer
-Description: Used for integration with the shop.
-
-Endpoint: GET /points_balance/:shopify_customer_id
-
-Query parameters:
-shopify_customer_id  is required
-
-Description: Get Customer points balance, this is necessary to be used before adding the product to the cart, (and before going to checkout ??? need to decide after integration with add to cart level).
-Before adding a product to the cart you need to get the customer points balance and compare it with the points_prices amount of in-cart products plus the points price of the reward product that needs to be added to the cart, then if the customer points balance is higher or equal to the result (points_prices_amount), then allowed to add reward product to cart, otherwise need to inform customer the point balance is not enough to buy a product with points.
-Before going to checkout you need to detect in-cart reward products,…??? need to decide after integration with add to cart level low priority
-
-
-Order
-
-External routes
-Route: /external/v1/order
-Description: Used for integration with the shop.
-
-Endpoint: GET /:shopify_customer_id
-
-Query parameters
-shopify_customer_id is required
-
-Description: Get customer orders in detail, with reward points information for each order and line item.
-
-Endpoint: GET /before_add_to_cart/:shopify_customer_id/:shopify_product_id (final review necessary, not using can be necessary for future versions)
-
-Query parameters
-shopify_customer_id is required
-shopify_product_id is required
-
-Description: Run before adding to the cart for making sure the customer has enough balance to buy that product with points and the product is a reward product, in other words, make sure everything is correct before moving forward to add the product to the cart because the discount is adding by checking Shopify metafields which is accessible for manual change.
-
-
-
-Help for integrastion with the shop
-
-The below codes can be helpful for integration with the shop, these are just developer tested API calls with the test data directly in the theme.liquid file, just you need to use them at the correct time and under the correct conditions.
-
-HTML:
-<button id="apiCallOrdersBtn" style="position: fixed; top:0; left:0; padding-top: 100px">API CALL Orders</button>
-<button id="apiCallCustomerPointsBalanceBtn" style="position: fixed; top:0; left:200px; padding-top: 100px">API CALL CustomerPointsBalance</button>
-<button id="apiCallProductIsRewardBtn" style="position: fixed; top:0; left:400px; padding-top: 100px">API CALL ProductIsReward</button>
-<button id="apiCallBeforeAddToCartBtn" style="position: fixed; top:0; left: 100px; padding-top:100px">API CALL BeforeAddToCart</button>
-
-JS:
-<script>
-  const apiCallOrders = async () => {
-    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/order/{{ http://customer.id  }}');
-
-const json = await response.json();
-
-console.log(JSON.stringify(json));
-
-  }
-  const apiCallOrdersBtn = document.querySelector('#apiCallOrdersBtn');
-  apiCallOrdersBtn.onclick = apiCallOrders;
-
-  const apiCallBeforeAddToCart = async () => {
-    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/order/before_add_to_cart/{{ http://customer.id  }}/7489095598319');
-
-const json = await response.json();
-
-console.log(JSON.stringify(json));
-
-  }
-  const apiCallBeforeAddToCartBtn = document.querySelector('#apiCallBeforeAddToCartBtn');
-  apiCallBeforeAddToCartBtn.onclick = apiCallBeforeAddToCart;
-
-  const apiCallCustomerPointsBalance = async () => {
-    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/customer/points_balance/{{ http://customer.id  }}');
-
-const json = await response.json();
-
-console.log(JSON.stringify(json));
-return json;
-
-  }
-  const apiCallCustomerPointsBalanceBtn = document.querySelector('#apiCallCustomerPointsBalanceBtn');
-  apiCallCustomerPointsBalanceBtn.onclick = apiCallCustomerPointsBalance;
-
- const apiCallProductIsReward = async () => {
-    const response = await fetch('https://loyalty-program.bnsystems.org/api/external/v1/configuration/is_reward_product/{{ product.id }}');
-
-const json = await response.json();
-
-console.log(JSON.stringify(json));
-return json;
-
-  }
-  const apiCallProductIsRewardBtn = document.querySelector('#apiCallProductIsRewardBtn');
-  apiCallProductIsRewardBtn.onclick = apiCallProductIsReward;
-</script>
-
-Completed TO DOS
-
-1. Install the app in the staging environment after discussion with the integration team, I need to provide a development store to the integration team, where they need to install the Stax 2.0 theme latest version, parallelly I will install the app staging environment to the same development store. - DONE
-
-2. Integration with SHOP using the above-mentioned API endpoints and the Product and Customer Shopify metafield values and in Cart existing products data to compare things and understand if the Customer balance - in cart reward product points * in cart reward product quantity >= New product adding to cart when the customer clicks to the Buy with points button. - IN PROGRESS by the integration team
-
-3. Admin interface Configuration:
-
-a) Entire store $1  = [number input] points - DONE
-b) Specific products [product input] $1 = [number input] points  - CRUD is done
-c) Individual customers [customer input] $1 = [number input] points - CRUD is done
-g) Reward products [product input] points price [number input] points - CRUD is done
-h) Navigation, pages, and routes - are done
-e) Pre Sale product $1 = [number input] points - DONE
-f) Gift Card $1 = [number input] points - DONE
-d) Specific dates [date range input] $1 = [number input] points - In progress
-
-
-4. Many internal API endpoints documentation are not documented and have very low priority, possibly also not necessary. - Marked as not necessary
-
-5. Final review for double-checking, optimizing, and finalizing all things that are necessary for integration with the shop - Done
-   
+API /api
